@@ -1,14 +1,12 @@
 import streamlit as st
-import extra_streamlit_components as stx # 必须先 pip install extra-streamlit-components
 from supabase import create_client
 import pandas as pd
 import plotly.express as px
 import time
-import datetime
 
 # --- 配置区 ---
-URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
-KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
+URL = st.secrets["SUPABASE_URL"]
+KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def init_connection():
@@ -16,37 +14,55 @@ def init_connection():
 
 supabase = init_connection()
 
-# --- Cookie 管理器初始化 ---
-# 注意：这行代码必须在页面加载早期运行
-cookie_manager = stx.CookieManager(key="auth_cookie_manager")
+# --- 新增：免登录逻辑配置 ---
+THREE_HOURS = 3 * 60 * 60  # 10800 秒
 
-# --- 核心：持久化登录逻辑 ---
-def get_current_user():
-    """尝试从 Cookie 获取 Token 并恢复 Supabase 会话"""
-    # 1. 检查 Session State 是否已经有用户
-    if 'user' in st.session_state and st.session_state.user is not None:
-        return st.session_state.user
+def set_login_cookies(user_id, email):
+    """通过 JS 注入设置浏览器 Cookie"""
+    expiry_ts = time.time() + THREE_HOURS
+    js_code = f"""
+    <script>
+    function setCookie(name, value, seconds) {{
+        var expires = "";
+        if (seconds) {{
+            var date = new Date();
+            date.setTime(date.getTime() + (seconds * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }}
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }}
+    setCookie("job_scout_uid", "{user_id}", {THREE_HOURS});
+    setCookie("job_scout_email", "{email}", {THREE_HOURS});
+    setCookie("job_scout_expiry", "{expiry_ts}", {THREE_HOURS});
+    </script>
+    """
+    st.components.v1.html(js_code, height=0)
 
-    # 2. 如果没有，尝试从 Cookie 读取 Token
-    cookies = cookie_manager.get_all()
-    access_token = cookies.get("sb_access_token")
-    refresh_token = cookies.get("sb_refresh_token")
+def clear_login_cookies():
+    """清除浏览器 Cookie"""
+    js_code = """
+    <script>
+    document.cookie = "job_scout_uid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "job_scout_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "job_scout_expiry=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    </script>
+    """
+    st.components.v1.html(js_code, height=0)
 
-    if access_token and refresh_token:
-        try:
-            # 使用 Token 恢复会话，这比单纯存 UID 安全得多
-            session = supabase.auth.set_session(access_token, refresh_token)
-            st.session_state.user = session.user
-            return session.user
-        except Exception as e:
-            # Token 过期或无效
-            return None
-    return None
+# --- 修改：初始化 Session State 逻辑 ---
+if "user" not in st.session_state:
+    # 尝试从浏览器 Cookie 恢复登录状态 (Streamlit 1.30+ 支持)
+    c_uid = st.context.cookies.get("job_scout_uid")
+    c_email = st.context.cookies.get("job_scout_email")
+    c_expiry = st.context.cookies.get("job_scout_expiry")
 
-# 初始化用户状态
-user = get_current_user()
+    if c_uid and c_expiry and time.time() < float(c_expiry):
+        # 模拟 Supabase 用户对象结构，确保后续代码不报错
+        st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
+    else:
+        st.session_state.user = None
 
-# --- 身份验证界面 ---
+# --- 身份验证界面 (保持布局不变，仅增加 Cookie 写入) ---
 def auth_ui():
     st.title("🔐 登录中心")
     tab1, tab2 = st.tabs(["用户登录", "新用户注册"])
@@ -62,17 +78,9 @@ def auth_ui():
                     res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                     if res.user:
                         st.session_state.user = res.user
-                        
-                        # --- 修改部分开始 ---
-                        # 设置 3 小时过期
-                        expires = datetime.datetime.now() + datetime.timedelta(hours=3)
-                        # --- 修改部分结束 ---
-
-                        cookie_manager.set("sb_access_token", res.session.access_token, expires_at=expires, key="set_at")
-                        cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=expires, key="set_rt")
-                        
-                        st.success("登录成功！")
-                        time.sleep(1) # 等待 Cookie 写入
+                        # 写入 Cookie 实现 3 小时持久化
+                        set_login_cookies(res.user.id, res.user.email)
+                        time.sleep(0.5) # 留出写入时间
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
@@ -89,21 +97,18 @@ def auth_ui():
                     st.error(f"注册失败: {str(ex)}")
 
 # --- 主程序逻辑 ---
-if not user:
+if st.session_state.user is None:
     auth_ui()
 else:
     # 侧边栏
-    st.sidebar.success(f"已登录: {user.email}")
-    st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{user.id}")
+    st.sidebar.success(f"已登录: {st.session_state.user.email}")
+    st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{st.session_state.user.id}")
     
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
         st.session_state.user = None
-        
-        # --- 修改：清除 Cookie ---
-        cookie_manager.delete("sb_access_token", key="del_at")
-        cookie_manager.delete("sb_refresh_token", key="del_rt")
-        
+        clear_login_cookies() # 清除 Cookie
+        time.sleep(0.5)
         st.rerun()
 
     st.title("💼 我的申请追踪看板")
@@ -124,10 +129,10 @@ else:
             st.warning(f"数据加载异常: {str(ex)}")
             return pd.DataFrame()
 
-    df = load_my_data(user.id)
+    df = load_my_data(st.session_state.user.id)
 
     if not df.empty:
-        # --- 1. 数据统计与可视化 ---
+        # --- 1. 数据统计与可视化 (保持不变) ---
         st.subheader("📊 数据概览")
         m1, m2, m3 = st.columns(3)
         total_apps = len(df)
@@ -160,12 +165,12 @@ else:
 
         st.divider()
 
-        # --- 2. 列表区域 ---
+        # --- 2. 列表区域 (保持不变) ---
         st.subheader("📋 投递明细列表")
         st.dataframe(df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], use_container_width=True, hide_index=True)
         st.divider()
 
-        # --- 3. 内容管理 ---
+        # --- 3. 内容管理 (保持不变) ---
         st.subheader("🛠️ 条目管理")
         job_options = df.apply(lambda x: f"序号 {x['显示序号']}: {x['title']} @ {x['company']}", axis=1).tolist()
         sel = st.selectbox("请选择要操作的行:", ["-- 请选择 --"] + job_options)
