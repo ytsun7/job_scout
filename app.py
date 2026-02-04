@@ -1,5 +1,5 @@
 import streamlit as st
-import extra_streamlit_components as stx 
+import extra_streamlit_components as stx
 from supabase import create_client
 import pandas as pd
 import plotly.express as px
@@ -16,48 +16,38 @@ def init_connection():
 
 supabase = init_connection()
 
-
-# --- 1. Cookie 管理器初始化 ---
+# --- Cookie 管理器初始化 ---
 cookie_manager = stx.CookieManager(key="auth_cookie_manager")
 
-# --- 2. 核心修复：防止登录页闪烁的同步机制 ---
-# 原理：页面刷新后的第一次运行，Cookie 往往是读不到的（空的）。
-# 我们强制让它“空转”一次，显示加载动画，等 Cookie 传回来后再正式渲染界面。
-if 'cookie_sync_done' not in st.session_state:
-    # 这是一个占位容器，防止后续的登录界面被渲染出来
-    placeholder = st.empty()
-    with placeholder.container():
-        with st.spinner("正在恢复您的登录状态..."):
-            # 必须调用 get_all 来触发前端数据回传
-            _ = cookie_manager.get_all()
-            # 强制等待 1 秒，给浏览器和 Python 建立连接的时间
-            time.sleep(1) 
-            
-    # 标记同步完成
-    st.session_state.cookie_sync_done = True
-    # 这里的 rerun 会带着读到的 Cookie 重新运行脚本，直接进入主页
-    st.rerun()
+# --- 核心修改：防止登录页闪烁的逻辑 ---
+if 'auth_ready' not in st.session_state:
+    # 如果是刷新后的第一次运行
+    st.session_state.auth_ready = True
+    
+    # 必须调用一次 get_all 以确保组件在前端加载并回传 Cookie
+    cookie_manager.get_all()
+    
+    # 显示加载状态并停止后续脚本运行，等待组件触发 Rerun
+    with st.spinner("正在验证身份..."):
+        time.sleep(0.5) # 给一点点时间让 UI 渲染 spinner
+        st.stop()
 
-# --- 3. 获取当前用户逻辑 ---
+# --- 获取当前用户逻辑 ---
 def get_current_user():
     """尝试从 Cookie 获取 Token 并恢复 Supabase 会话"""
-    # 优先检查内存中的状态
     if 'user' in st.session_state and st.session_state.user is not None:
         return st.session_state.user
 
-    # 从 Cookie 读取 Token
     cookies = cookie_manager.get_all()
     access_token = cookies.get("sb_access_token")
     refresh_token = cookies.get("sb_refresh_token")
 
     if access_token and refresh_token:
         try:
-            # 尝试恢复会话
             session = supabase.auth.set_session(access_token, refresh_token)
             st.session_state.user = session.user
             return session.user
         except Exception as e:
-            # Token 失效
             return None
     return None
 
@@ -80,8 +70,8 @@ def auth_ui():
                     if res.user:
                         st.session_state.user = res.user
                         
-                        # --- 设置 3 小时免登录 ---
-                        expires = datetime.datetime.now() + datetime.timedelta(hours=0.5)
+                        # 设置 3 小时过期
+                        expires = datetime.datetime.now() + datetime.timedelta(hours=3)
                         
                         cookie_manager.set("sb_access_token", res.session.access_token, expires_at=expires, key="set_at")
                         cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=expires, key="set_rt")
@@ -115,14 +105,9 @@ else:
         supabase.auth.sign_out()
         st.session_state.user = None
         
-        # 清除 Cookie
         cookie_manager.delete("sb_access_token", key="del_at")
         cookie_manager.delete("sb_refresh_token", key="del_rt")
         
-        # 清除同步标志，确保下次登录能重新检测
-        if 'cookie_sync_done' in st.session_state:
-            del st.session_state.cookie_sync_done
-            
         st.rerun()
 
     st.title("💼 我的申请追踪看板")
