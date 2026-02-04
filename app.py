@@ -9,12 +9,13 @@ if "user" not in st.session_state:
     st.session_state.user = None
 
 # --- 配置区 ---
-# 来源于：
-URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
-KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
+# 安全提示：URL 和 KEY 现在从 Streamlit Secrets 中读取，不再硬编码在代码里
+URL = st.secrets["SUPABASE_URL"]
+KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def init_connection():
+    # 使用从 Secrets 获取的参数初始化客户端
     return create_client(URL, KEY)
 
 supabase = init_connection()
