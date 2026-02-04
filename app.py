@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 import time
 
-# --- 1. 配置区 ---
+# --- 配置区 ---
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
 
@@ -14,37 +14,32 @@ def init_connection():
 
 supabase = init_connection()
 
-# --- 2. 免登录逻辑配置 (3小时) ---
-THREE_HOURS = 3 * 60 * 60 
+# --- 新增：免登录逻辑配置 ---
+THREE_HOURS = 3 * 60 * 60  # 10800 秒
 
 def set_login_cookies(user_id, email):
-    """
-    通过 JS 注入设置持久化 Cookie。
-    注意：线上环境必须带上 path=/ 和 SameSite=Lax。
-    """
+    """通过 JS 注入设置浏览器 Cookie"""
     expiry_ts = time.time() + THREE_HOURS
     js_code = f"""
     <script>
-    (function() {{
-        function setCookie(name, value, seconds) {{
+    function setCookie(name, value, seconds) {{
+        var expires = "";
+        if (seconds) {{
             var date = new Date();
             date.setTime(date.getTime() + (seconds * 1000));
-            var expires = "; expires=" + date.toUTCString();
-            // 确保 path 覆盖整个域名，SameSite 处理跨域刷新
-            document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+            expires = "; expires=" + date.toUTCString();
         }}
-        setCookie("job_scout_uid", "{user_id}", {THREE_HOURS});
-        setCookie("job_scout_email", "{email}", {THREE_HOURS});
-        setCookie("job_scout_expiry", "{expiry_ts}", {THREE_HOURS});
-        console.log("Persistence success: {user_id}");
-    }})();
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }}
+    setCookie("job_scout_uid", "{user_id}", {THREE_HOURS});
+    setCookie("job_scout_email", "{email}", {THREE_HOURS});
+    setCookie("job_scout_expiry", "{expiry_ts}", {THREE_HOURS});
     </script>
     """
-    # 线上环境：使用 html 组件直接渲染，不包裹在 st.empty 中以保证稳定性
     st.components.v1.html(js_code, height=0)
 
 def clear_login_cookies():
-    """清除物理 Cookie"""
+    """清除浏览器 Cookie"""
     js_code = """
     <script>
     document.cookie = "job_scout_uid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -54,29 +49,20 @@ def clear_login_cookies():
     """
     st.components.v1.html(js_code, height=0)
 
-# --- 3. 登录态恢复逻辑 ---
-# 线上刷新时，st.context.cookies 的获取有时会有延迟，这里做健壮性处理
+# --- 修改：初始化 Session State 逻辑 ---
 if "user" not in st.session_state:
-    st.session_state.user = None
+    # 尝试从浏览器 Cookie 恢复登录状态 (Streamlit 1.30+ 支持)
+    c_uid = st.context.cookies.get("job_scout_uid")
+    c_email = st.context.cookies.get("job_scout_email")
+    c_expiry = st.context.cookies.get("job_scout_expiry")
 
-# 如果当前没登录，尝试从浏览器提取状态
-if st.session_state.user is None:
-    cookies = st.context.cookies
-    c_uid = cookies.get("job_scout_uid")
-    c_expiry = cookies.get("job_scout_expiry")
-    c_email = cookies.get("job_scout_email")
+    if c_uid and c_expiry and time.time() < float(c_expiry):
+        # 模拟 Supabase 用户对象结构，确保后续代码不报错
+        st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
+    else:
+        st.session_state.user = None
 
-    if c_uid and c_expiry:
-        try:
-            if time.time() < float(c_expiry):
-                st.session_state.user = type('User', (object,), {
-                    'id': c_uid, 
-                    'email': c_email if c_email else "User"
-                })
-        except:
-            pass
-
-# --- 4. 身份验证界面 ---
+# --- 身份验证界面 (保持布局不变，仅增加 Cookie 写入) ---
 def auth_ui():
     st.title("🔐 登录中心")
     tab1, tab2 = st.tabs(["用户登录", "新用户注册"])
@@ -91,17 +77,10 @@ def auth_ui():
                 try:
                     res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                     if res.user:
-                        # 重要：先将信息存入 session_state
                         st.session_state.user = res.user
-                        # 触发 JS 写入 Cookie
+                        # 写入 Cookie 实现 3 小时持久化
                         set_login_cookies(res.user.id, res.user.email)
-                        
-                        # 线上环境修复核心：
-                        # 1. 显示成功信息提示
-                        st.success("验证通过，正在同步浏览器凭证...")
-                        # 2. 强制等待，确保浏览器有足够时间处理 JS Cookie 写入请求
-                        time.sleep(1.5) 
-                        # 3. 此时再 rerun，Cookie 已经落盘
+                        time.sleep(0.5) # 留出写入时间
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
@@ -117,18 +96,18 @@ def auth_ui():
                 except Exception as ex:
                     st.error(f"注册失败: {str(ex)}")
 
-# --- 5. 主程序逻辑 ---
+# --- 主程序逻辑 ---
 if st.session_state.user is None:
     auth_ui()
 else:
     # 侧边栏
     st.sidebar.success(f"已登录: {st.session_state.user.email}")
-    st.sidebar.info(f"🔑 你的 User ID:\n\n{st.session_state.user.id}")
+    st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{st.session_state.user.id}")
     
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
         st.session_state.user = None
-        clear_login_cookies()
+        clear_login_cookies() # 清除 Cookie
         time.sleep(0.5)
         st.rerun()
 
@@ -147,16 +126,21 @@ else:
                 df.insert(0, '显示序号', df.index)
             return df
         except Exception as ex:
+            st.warning(f"数据加载异常: {str(ex)}")
             return pd.DataFrame()
 
     df = load_my_data(st.session_state.user.id)
 
     if not df.empty:
+        # --- 1. 数据统计与可视化 (保持不变) ---
         st.subheader("📊 数据概览")
         m1, m2, m3 = st.columns(3)
-        m1.metric("总申请数", len(df))
-        m2.metric("面试邀约", len(df[df['status'] == 'interviewing']))
-        m3.metric("收到 Offer", len(df[df['status'] == 'offer']))
+        total_apps = len(df)
+        offers = len(df[df['status'] == 'offer'])
+        interviews = len(df[df['status'] == 'interviewing'])
+        m1.metric("总申请数", total_apps)
+        m2.metric("面试邀约", interviews)
+        m3.metric("收到 Offer", offers)
 
         st.write("---")
         col_left, col_right = st.columns([1, 1])
@@ -175,15 +159,18 @@ else:
             df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
             trend_df = df.groupby('week').size().reset_index(name='count')
             trend_df = trend_df.sort_values('week')
-            fig_trend = px.bar(trend_df, x='week', y='count', color_discrete_sequence=['#0073b1'])
+            fig_trend = px.bar(trend_df, x='week', y='count', labels={'week': '周次', 'count': '申请数'}, color_discrete_sequence=['#0073b1'])
             fig_trend.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
             st.plotly_chart(fig_trend, use_container_width=True)
 
         st.divider()
+
+        # --- 2. 列表区域 (保持不变) ---
         st.subheader("📋 投递明细列表")
         st.dataframe(df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], use_container_width=True, hide_index=True)
-        
         st.divider()
+
+        # --- 3. 内容管理 (保持不变) ---
         st.subheader("🛠️ 条目管理")
         job_options = df.apply(lambda x: f"序号 {x['显示序号']}: {x['title']} @ {x['company']}", axis=1).tolist()
         sel = st.selectbox("请选择要操作的行:", ["-- 请选择 --"] + job_options)
@@ -195,18 +182,19 @@ else:
                 c1, c2 = st.columns(2)
                 with c1:
                     t = st.text_input("岗位名称", value=row['title'])
-                    s = st.selectbox("状态", ["applied", "interviewing", "offer", "rejected", "ghosted"], 
-                                     index=["applied", "interviewing", "offer", "rejected", "ghosted"].index(row['status']))
+                    status_list = ["applied", "interviewing", "offer", "rejected", "ghosted"]
+                    current_idx = status_list.index(row['status']) if row['status'] in status_list else 0
+                    s = st.selectbox("当前状态", status_list, index=current_idx)
                 with c2:
-                    c = st.text_input("公司", value=row['company'])
+                    c = st.text_input("公司名称", value=row['company'])
                     l = st.text_input("地点", value=row['location'])
-                desc = st.text_area("描述", value=row['description'], height=150)
+                desc = st.text_area("职位描述", value=row['description'], height=150)
                 if st.form_submit_button("💾 保存修改"):
                     supabase.table("job_applications").update({"title": t, "company": c, "status": s, "location": l, "description": desc}).eq("id", row['id']).execute()
                     st.cache_data.clear()
                     st.rerun()
 
-            if st.button("🗑️ 删除此记录"):
+            if st.button("🗑️ 删除此条记录"):
                 supabase.table("job_applications").delete().eq("id", row['id']).execute()
                 st.cache_data.clear()
                 st.rerun()
