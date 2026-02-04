@@ -26,7 +26,7 @@ if 'cookie_sync_done' not in st.session_state:
     # 这是一个占位容器，防止后续的登录界面被渲染出来
     placeholder = st.empty()
     with placeholder.container():
-        with st.spinner("正在恢复您的登录状态..."):
+        with st.spinner("Loading..."):
             # 必须调用 get_all 来触发前端数据回传
             _ = cookie_manager.get_all()
             # 强制等待 1 秒，给浏览器和 Python 建立连接的时间
