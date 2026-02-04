@@ -1,5 +1,5 @@
 import streamlit as st
-import extra_streamlit_components as stx # 必须先 pip install extra-streamlit-components
+import extra_streamlit_components as stx
 from supabase import create_client
 import pandas as pd
 import plotly.express as px
@@ -7,8 +7,8 @@ import time
 import datetime
 
 # --- 配置区 ---
-URL = st.secrets["SUPABASE_URL"]
-KEY = st.secrets["SUPABASE_KEY"]
+URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
+KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
 
 @st.cache_resource
 def init_connection():
@@ -16,35 +16,41 @@ def init_connection():
 
 supabase = init_connection()
 
-
 # --- Cookie 管理器初始化 ---
-# 注意：这行代码必须在页面加载早期运行
 cookie_manager = stx.CookieManager(key="auth_cookie_manager")
 
-# --- 核心：持久化登录逻辑 ---
+# --- 核心修改：防止登录页闪烁的逻辑 ---
+if 'auth_ready' not in st.session_state:
+    # 如果是刷新后的第一次运行
+    st.session_state.auth_ready = True
+    
+    # 必须调用一次 get_all 以确保组件在前端加载并回传 Cookie
+    cookie_manager.get_all()
+    
+    # 显示加载状态并停止后续脚本运行，等待组件触发 Rerun
+    with st.spinner("正在验证身份..."):
+        time.sleep(0.5) # 给一点点时间让 UI 渲染 spinner
+        st.stop()
+
+# --- 获取当前用户逻辑 ---
 def get_current_user():
     """尝试从 Cookie 获取 Token 并恢复 Supabase 会话"""
-    # 1. 检查 Session State 是否已经有用户
     if 'user' in st.session_state and st.session_state.user is not None:
         return st.session_state.user
 
-    # 2. 如果没有，尝试从 Cookie 读取 Token
     cookies = cookie_manager.get_all()
     access_token = cookies.get("sb_access_token")
     refresh_token = cookies.get("sb_refresh_token")
 
     if access_token and refresh_token:
         try:
-            # 使用 Token 恢复会话，这比单纯存 UID 安全得多
             session = supabase.auth.set_session(access_token, refresh_token)
             st.session_state.user = session.user
             return session.user
         except Exception as e:
-            # Token 过期或无效
             return None
     return None
 
-# 初始化用户状态
 user = get_current_user()
 
 # --- 身份验证界面 ---
@@ -64,16 +70,14 @@ def auth_ui():
                     if res.user:
                         st.session_state.user = res.user
                         
-                        # --- 修改部分开始 ---
                         # 设置 3 小时过期
                         expires = datetime.datetime.now() + datetime.timedelta(hours=3)
-                        # --- 修改部分结束 ---
-
+                        
                         cookie_manager.set("sb_access_token", res.session.access_token, expires_at=expires, key="set_at")
                         cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=expires, key="set_rt")
                         
                         st.success("登录成功！")
-                        time.sleep(1) # 等待 Cookie 写入
+                        time.sleep(1)
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
@@ -101,7 +105,6 @@ else:
         supabase.auth.sign_out()
         st.session_state.user = None
         
-        # --- 修改：清除 Cookie ---
         cookie_manager.delete("sb_access_token", key="del_at")
         cookie_manager.delete("sb_refresh_token", key="del_rt")
         
