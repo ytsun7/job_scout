@@ -7,8 +7,8 @@ import time
 import datetime
 
 # --- 配置区 ---
-URL = st.secrets["SUPABASE_URL"]
-KEY = st.secrets["SUPABASE_KEY"]
+URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
+KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
 
 @st.cache_resource
 def init_connection():
