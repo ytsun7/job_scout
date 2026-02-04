@@ -133,7 +133,7 @@ else:
             df = pd.DataFrame(response.data)
             if not df.empty:
                 df['dt_object'] = pd.to_datetime(df['created_at'])
-                df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d %H:00')
+                df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d')
                 df = df.reset_index(drop=True)
                 df.index = df.index + 1
                 df.insert(0, '显示序号', df.index)
