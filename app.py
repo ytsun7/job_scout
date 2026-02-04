@@ -7,14 +7,15 @@ import time
 import datetime
 
 # --- 配置区 ---
-URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
-KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
+URL = st.secrets["SUPABASE_URL"]
+KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def init_connection():
     return create_client(URL, KEY)
 
 supabase = init_connection()
+
 
 # --- 1. Cookie 管理器初始化 ---
 cookie_manager = stx.CookieManager(key="auth_cookie_manager")
