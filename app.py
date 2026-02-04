@@ -4,7 +4,8 @@ import pandas as pd
 import plotly.express as px
 import time
 
-# --- 配置区 ---
+# --- 1. 配置区 ---
+# 建议在 Streamlit Cloud 的 Secrets 中配置以下变量
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
 
@@ -14,28 +15,28 @@ def init_connection():
 
 supabase = init_connection()
 
-# --- 新增：免登录逻辑配置 ---
+# --- 2. 免登录逻辑配置 (3小时) ---
 THREE_HOURS = 3 * 60 * 60  # 10800 秒
 
 def set_login_cookies(user_id, email):
-    """通过 JS 注入设置浏览器 Cookie"""
+    """通过 JS 注入设置浏览器 Cookie，解决线上刷新丢失问题"""
     expiry_ts = time.time() + THREE_HOURS
+    # 增加 SameSite=Lax 和 path=/ 确保线上域名下 Cookie 能够被正确读取
     js_code = f"""
     <script>
     function setCookie(name, value, seconds) {{
-        var expires = "";
-        if (seconds) {{
-            var date = new Date();
-            date.setTime(date.getTime() + (seconds * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }}
-        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        var date = new Date();
+        date.setTime(date.getTime() + (seconds * 1000));
+        var expires = "; expires=" + date.toUTCString();
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
     }}
     setCookie("job_scout_uid", "{user_id}", {THREE_HOURS});
     setCookie("job_scout_email", "{email}", {THREE_HOURS});
     setCookie("job_scout_expiry", "{expiry_ts}", {THREE_HOURS});
+    console.log("Cookies set for 3 hours");
     </script>
     """
+    # 使用 st.components 确保 JS 执行
     st.components.v1.html(js_code, height=0)
 
 def clear_login_cookies():
@@ -49,20 +50,26 @@ def clear_login_cookies():
     """
     st.components.v1.html(js_code, height=0)
 
-# --- 修改：初始化 Session State 逻辑 ---
-if "user" not in st.session_state:
-    # 尝试从浏览器 Cookie 恢复登录状态 (Streamlit 1.30+ 支持)
+# --- 3. 初始化 Session State (核心修复点) ---
+if "user" not in st.session_state or st.session_state.user is None:
+    # 尝试从浏览器 Cookie 恢复状态
     c_uid = st.context.cookies.get("job_scout_uid")
     c_email = st.context.cookies.get("job_scout_email")
     c_expiry = st.context.cookies.get("job_scout_expiry")
 
-    if c_uid and c_expiry and time.time() < float(c_expiry):
-        # 模拟 Supabase 用户对象结构，确保后续代码不报错
-        st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
+    if c_uid and c_expiry:
+        try:
+            # 校验是否在有效期内
+            if time.time() < float(c_expiry):
+                st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
+            else:
+                st.session_state.user = None
+        except (ValueError, TypeError):
+            st.session_state.user = None
     else:
         st.session_state.user = None
 
-# --- 身份验证界面 (保持布局不变，仅增加 Cookie 写入) ---
+# --- 4. 身份验证界面 ---
 def auth_ui():
     st.title("🔐 登录中心")
     tab1, tab2 = st.tabs(["用户登录", "新用户注册"])
@@ -78,9 +85,11 @@ def auth_ui():
                     res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                     if res.user:
                         st.session_state.user = res.user
-                        # 写入 Cookie 实现 3 小时持久化
+                        # 写入 Cookie
                         set_login_cookies(res.user.id, res.user.email)
-                        time.sleep(0.5) # 留出写入时间
+                        st.success("登录成功，正在跳转...")
+                        # 关键：线上环境需要物理等待，确保 JS 写入指令发送到了浏览器
+                        time.sleep(1.0) 
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
@@ -96,7 +105,7 @@ def auth_ui():
                 except Exception as ex:
                     st.error(f"注册失败: {str(ex)}")
 
-# --- 主程序逻辑 ---
+# --- 5. 主程序逻辑 ---
 if st.session_state.user is None:
     auth_ui()
 else:
@@ -107,7 +116,7 @@ else:
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
         st.session_state.user = None
-        clear_login_cookies() # 清除 Cookie
+        clear_login_cookies()
         time.sleep(0.5)
         st.rerun()
 
@@ -132,25 +141,34 @@ else:
     df = load_my_data(st.session_state.user.id)
 
     if not df.empty:
-        # --- 1. 数据统计与可视化 (保持不变) ---
+        # --- 1. 数据统计与可视化 ---
         st.subheader("📊 数据概览")
+        
         m1, m2, m3 = st.columns(3)
         total_apps = len(df)
         offers = len(df[df['status'] == 'offer'])
         interviews = len(df[df['status'] == 'interviewing'])
+        
         m1.metric("总申请数", total_apps)
         m2.metric("面试邀约", interviews)
         m3.metric("收到 Offer", offers)
 
         st.write("---")
+        
         col_left, col_right = st.columns([1, 1])
 
         with col_left:
             st.markdown("**状态分布**")
             status_counts = df['status'].value_counts().reset_index()
             status_counts.columns = ['状态', '数量']
-            color_map = {"applied": "#0073b1", "interviewing": "#f39c12", "offer": "#27ae60", "rejected": "#e74c3c", "ghosted": "#95a5a6"}
-            fig_pie = px.pie(status_counts, values='数量', names='状态', hole=0.4, color='状态', color_discrete_map=color_map)
+            color_map = {
+                "applied": "#0073b1", "interviewing": "#f39c12", 
+                "offer": "#27ae60", "rejected": "#e74c3c", "ghosted": "#95a5a6"
+            }
+            fig_pie = px.pie(
+                status_counts, values='数量', names='状态', 
+                hole=0.4, color='状态', color_discrete_map=color_map
+            )
             fig_pie.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
             st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -159,18 +177,28 @@ else:
             df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
             trend_df = df.groupby('week').size().reset_index(name='count')
             trend_df = trend_df.sort_values('week')
-            fig_trend = px.bar(trend_df, x='week', y='count', labels={'week': '周次', 'count': '申请数'}, color_discrete_sequence=['#0073b1'])
+            
+            fig_trend = px.bar(
+                trend_df, x='week', y='count',
+                labels={'week': '周次', 'count': '申请数'},
+                color_discrete_sequence=['#0073b1']
+            )
             fig_trend.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
             st.plotly_chart(fig_trend, use_container_width=True)
 
         st.divider()
 
-        # --- 2. 列表区域 (保持不变) ---
+        # --- 2. 列表区域 ---
         st.subheader("📋 投递明细列表")
-        st.dataframe(df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], use_container_width=True, hide_index=True)
+        st.dataframe(
+            df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], 
+            use_container_width=True, 
+            hide_index=True
+        )
+
         st.divider()
 
-        # --- 3. 内容管理 (保持不变) ---
+        # --- 3. 内容管理 ---
         st.subheader("🛠️ 条目管理")
         job_options = df.apply(lambda x: f"序号 {x['显示序号']}: {x['title']} @ {x['company']}", axis=1).tolist()
         sel = st.selectbox("请选择要操作的行:", ["-- 请选择 --"] + job_options)
@@ -178,6 +206,7 @@ else:
         if sel != "-- 请选择 --":
             display_idx = int(sel.split(':')[0].replace('序号 ', ''))
             row = df[df['显示序号'] == display_idx].iloc[0]
+            
             with st.form("edit_form"):
                 c1, c2 = st.columns(2)
                 with c1:
@@ -188,9 +217,13 @@ else:
                 with c2:
                     c = st.text_input("公司名称", value=row['company'])
                     l = st.text_input("地点", value=row['location'])
+                
                 desc = st.text_area("职位描述", value=row['description'], height=150)
+                
                 if st.form_submit_button("💾 保存修改"):
-                    supabase.table("job_applications").update({"title": t, "company": c, "status": s, "location": l, "description": desc}).eq("id", row['id']).execute()
+                    supabase.table("job_applications").update({
+                        "title": t, "company": c, "status": s, "location": l, "description": desc
+                    }).eq("id", row['id']).execute()
                     st.cache_data.clear()
                     st.rerun()
 
