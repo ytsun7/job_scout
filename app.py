@@ -1,12 +1,12 @@
- import streamlit as st
+import streamlit as st
 from supabase import create_client
 import pandas as pd
 import plotly.express as px
 import time
 
 # --- 配置区 ---
-URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
-KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
+URL = st.secrets["SUPABASE_URL"]
+KEY = st.secrets["SUPABASE_KEY"]
 
 @st.cache_resource
 def init_connection():
