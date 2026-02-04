@@ -9,19 +9,16 @@ import pytz
 URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
 KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
 
-# [修改点 1] 删除手动配置的 LOCAL_TIMEZONE，改为后续动态获取
-
 @st.cache_resource
 def init_connection():
     return create_client(URL, KEY)
 
 supabase = init_connection()
 
-# --- Cookie 与时区管理逻辑 ---
-THREE_HOURS = 3 * 60 * 60  # 10800 秒
+# --- Cookie 管理与时区自动检测 ---
+THREE_HOURS = 3 * 60 * 60
 
 def set_login_cookies(user_id, email):
-    """通过 JS 注入设置身份验证 Cookie"""
     expiry_ts = time.time() + THREE_HOURS
     js_code = f"""
     <script>
@@ -42,7 +39,6 @@ def set_login_cookies(user_id, email):
     st.components.v1.html(js_code, height=0)
 
 def clear_login_cookies():
-    """清除浏览器 Cookie"""
     js_code = """
     <script>
     document.cookie = "job_scout_uid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -53,28 +49,34 @@ def clear_login_cookies():
     """
     st.components.v1.html(js_code, height=0)
 
-def ensure_timezone_cookie():
+def get_browser_timezone():
     """
-    [修改点 2] 自动检测浏览器时区
-    如果 Cookie 中没有时区信息，则注入 JS 获取浏览器时区并写入 Cookie。
+    尝试获取浏览器时区。
+    如果 Cookie 中没有，注入 JS 写入 Cookie，并返回 None (等待下一次运行读取)。
     """
-    # 尝试从 cookie 获取时区
+    # 1. 尝试读取 Cookie
     tz_cookie = st.context.cookies.get("job_scout_timezone")
+    if tz_cookie:
+        return tz_cookie
     
-    if not tz_cookie:
-        # 如果没有找到 cookie，注入 JS 获取浏览器时区
-        # Intl.DateTimeFormat().resolvedOptions().timeZone 会返回如 'Asia/Shanghai'
+    # 2. 如果没有 Cookie，注入 JS 获取并写入
+    # 使用 session_state 防止无限循环刷新
+    if "tz_inject_run" not in st.session_state:
+        st.session_state.tz_inject_run = True
         js_code = """
         <script>
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
         document.cookie = "job_scout_timezone=" + tz + "; path=/; max-age=31536000";
+        // 稍微延迟后刷新页面，让 Python 能读到 Cookie
+        setTimeout(function(){ window.parent.location.reload(); }, 500);
         </script>
         """
         st.components.v1.html(js_code, height=0)
-        return 'UTC' # 首次加载尚未写入，暂时默认 UTC
-    return tz_cookie
+        time.sleep(1) # 等待 JS 执行
+    
+    return None # 暂时未获取到
 
-# --- 初始化 Session State 逻辑 ---
+# --- 初始化 Session ---
 if "user" not in st.session_state:
     c_uid = st.context.cookies.get("job_scout_uid")
     c_email = st.context.cookies.get("job_scout_email")
@@ -85,21 +87,15 @@ if "user" not in st.session_state:
     else:
         st.session_state.user = None
 
-# 获取当前用户时区 (需要在页面加载早期执行)
-current_user_timezone = ensure_timezone_cookie()
-
 # --- 身份验证界面 ---
 def auth_ui():
     st.title("🔐 登录中心")
     tab1, tab2 = st.tabs(["用户登录", "新用户注册"])
-    
     with tab1:
         with st.form("login_form"):
             e = st.text_input("邮箱")
             p = st.text_input("密码", type="password")
-            submit = st.form_submit_button("立即登录")
-            
-            if submit:
+            if st.form_submit_button("立即登录"):
                 try:
                     res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                     if res.user:
@@ -109,7 +105,6 @@ def auth_ui():
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
-
     with tab2:
         with st.form("signup_form"):
             ne = st.text_input("新邮箱")
@@ -125,11 +120,42 @@ def auth_ui():
 if st.session_state.user is None:
     auth_ui()
 else:
+    # ---------------------------------------------------------
+    # 侧边栏：时区控制中心 (核心修改)
+    # ---------------------------------------------------------
     st.sidebar.success(f"已登录: {st.session_state.user.email}")
-    st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{st.session_state.user.id}")
     
-    # 可选：在侧边栏显示当前检测到的时区，方便调试
-    # st.sidebar.caption(f"当前显示时区: {current_user_timezone}")
+    with st.sidebar.expander("🌍 时区设置", expanded=True):
+        # 获取自动检测的时区
+        detected_tz = get_browser_timezone()
+        
+        # 常见时区列表
+        common_timezones = ['Asia/Shanghai', 'Europe/Berlin', 'Europe/London', 'America/New_York', 'UTC']
+        
+        # 确定下拉框的默认值
+        default_ix = 0
+        if detected_tz and detected_tz in common_timezones:
+            default_ix = common_timezones.index(detected_tz)
+        elif detected_tz:
+            # 如果检测到的时区不在常用列表中，把它加进去
+            common_timezones.insert(0, detected_tz)
+            default_ix = 0
+        else:
+            # 没检测到，默认 UTC
+            default_ix = common_timezones.index('UTC')
+
+        # 让用户拥有最终决定权
+        selected_timezone = st.selectbox(
+            "当前显示时区:", 
+            common_timezones, 
+            index=default_ix,
+            help="默认为自动检测的本地时区，您也可以手动修改。"
+        )
+        
+        if detected_tz:
+            st.caption(f"🔍 已自动检测: {detected_tz}")
+        else:
+            st.caption("⏳ 正在检测浏览器时区...")
 
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
@@ -140,26 +166,28 @@ else:
 
     st.title("💼 我的申请追踪看板")
 
-    # [修改点 3] 将时区作为参数传入，避免缓存使用了旧时区
+    # ---------------------------------------------------------
+    # 数据加载函数 (传入 selected_timezone 以确保响应修改)
+    # ---------------------------------------------------------
     @st.cache_data(ttl=2)
-    def load_my_data(uid, target_timezone):
+    def load_my_data(uid, target_tz):
         try:
             response = supabase.table("job_applications").select("*").eq("user_id", uid).order('created_at', desc=True).execute()
             df = pd.DataFrame(response.data)
             if not df.empty:
-                # 1. 将字符串转换为 datetime 对象，并标记为 UTC 时区
+                # 1. 强制转换为 UTC 时间对象
                 df['dt_object'] = pd.to_datetime(df['created_at'], utc=True)
                 
-                # 2. 转换为动态获取的本地时区
+                # 2. 转换到目标时区
                 try:
-                    df['dt_object'] = df['dt_object'].dt.tz_convert(target_timezone)
+                    df['dt_object'] = df['dt_object'].dt.tz_convert(target_tz)
                 except Exception:
-                    # 如果浏览器时区识别失败（极其罕见），回退到 UTC
                     df['dt_object'] = df['dt_object'].dt.tz_convert('UTC')
                 
-                # 3. 格式化显示
+                # 3. 格式化字符串
                 df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d %H:%M')
                 
+                # 4. 生成辅助列
                 df = df.reset_index(drop=True)
                 df.index = df.index + 1
                 df.insert(0, '显示序号', df.index)
@@ -168,18 +196,15 @@ else:
             st.warning(f"数据加载异常: {str(ex)}")
             return pd.DataFrame()
 
-    # 加载数据时传入当前检测到的时区
-    df = load_my_data(st.session_state.user.id, current_user_timezone)
+    # 加载数据
+    df = load_my_data(st.session_state.user.id, selected_timezone)
 
     if not df.empty:
         st.subheader("📊 数据概览")
         m1, m2, m3 = st.columns(3)
-        total_apps = len(df)
-        offers = len(df[df['status'] == 'offer'])
-        interviews = len(df[df['status'] == 'interviewing'])
-        m1.metric("总申请数", total_apps)
-        m2.metric("面试邀约", interviews)
-        m3.metric("收到 Offer", offers)
+        m1.metric("总申请数", len(df))
+        m2.metric("面试邀约", len(df[df['status'] == 'interviewing']))
+        m3.metric("收到 Offer", len(df[df['status'] == 'offer']))
 
         st.write("---")
         col_left, col_right = st.columns([1, 1])
@@ -195,7 +220,7 @@ else:
 
         with col_right:
             st.markdown("**投递周趋势**")
-            # 趋势图使用转换后的 dt_object 确保按本地日期统计
+            # 使用转换后的本地时间计算“周”
             df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
             trend_df = df.groupby('week').size().reset_index(name='count')
             trend_df = trend_df.sort_values('week')
@@ -206,6 +231,7 @@ else:
         st.divider()
 
         st.subheader("📋 投递明细列表")
+        # 显示格式化后的时间
         st.dataframe(df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], use_container_width=True, hide_index=True)
         st.divider()
 
