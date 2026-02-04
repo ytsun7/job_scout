@@ -167,14 +167,14 @@ else:
             fig_pie.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
             st.plotly_chart(fig_pie, use_container_width=True)
 
-        with col_right:
+        # with col_right:
             st.markdown("**投递周趋势**")
             df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
             trend_df = df.groupby('week').size().reset_index(name='count')
             trend_df = trend_df.sort_values('week')
             fig_trend = px.bar(trend_df, x='week', y='count', labels={'week': '周次', 'count': '申请数'}, color_discrete_sequence=['#0073b1'])
             fig_trend.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
-            st.plotly_chart(fig_trend, use_container_width=True)
+            st.plotly_chart(fig_trend, use_container_width=True)# 
 
         st.divider()
 
