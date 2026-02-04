@@ -3,10 +3,17 @@ from supabase import create_client
 import pandas as pd
 import plotly.express as px
 import time
+import pytz  # 确保环境中有这个库，如果没有，pd.to_datetime 也能处理大部分情况
 
 # --- 配置区 ---
-URL = st.secrets["SUPABASE_URL"]
-KEY = st.secrets["SUPABASE_KEY"]
+URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
+KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
+
+# 设置你想要显示的本地时区
+# 如果你在中国，请使用 'Asia/Shanghai' (UTC+8)
+# 如果你在欧洲（如德国/法国），请使用 'Europe/Berlin' (UTC+1/UTC+2)
+# 如果你在英国，请使用 'Europe/London'
+LOCAL_TIMEZONE = 'Asia/Shanghai' 
 
 @st.cache_resource
 def init_connection():
@@ -14,7 +21,7 @@ def init_connection():
 
 supabase = init_connection()
 
-# --- 新增：免登录逻辑配置 ---
+# --- 免登录逻辑配置 ---
 THREE_HOURS = 3 * 60 * 60  # 10800 秒
 
 def set_login_cookies(user_id, email):
@@ -49,20 +56,18 @@ def clear_login_cookies():
     """
     st.components.v1.html(js_code, height=0)
 
-# --- 修改：初始化 Session State 逻辑 ---
+# --- 初始化 Session State 逻辑 ---
 if "user" not in st.session_state:
-    # 尝试从浏览器 Cookie 恢复登录状态 (Streamlit 1.30+ 支持)
     c_uid = st.context.cookies.get("job_scout_uid")
     c_email = st.context.cookies.get("job_scout_email")
     c_expiry = st.context.cookies.get("job_scout_expiry")
 
     if c_uid and c_expiry and time.time() < float(c_expiry):
-        # 模拟 Supabase 用户对象结构，确保后续代码不报错
         st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
     else:
         st.session_state.user = None
 
-# --- 身份验证界面 (保持布局不变，仅增加 Cookie 写入) ---
+# --- 身份验证界面 ---
 def auth_ui():
     st.title("🔐 登录中心")
     tab1, tab2 = st.tabs(["用户登录", "新用户注册"])
@@ -78,9 +83,8 @@ def auth_ui():
                     res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                     if res.user:
                         st.session_state.user = res.user
-                        # 写入 Cookie 实现 3 小时持久化
                         set_login_cookies(res.user.id, res.user.email)
-                        time.sleep(0.5) # 留出写入时间
+                        time.sleep(0.5) 
                         st.rerun()
                 except Exception as ex:
                     st.error(f"登录失败: {str(ex)}")
@@ -100,14 +104,13 @@ def auth_ui():
 if st.session_state.user is None:
     auth_ui()
 else:
-    # 侧边栏
     st.sidebar.success(f"已登录: {st.session_state.user.email}")
     st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{st.session_state.user.id}")
     
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
         st.session_state.user = None
-        clear_login_cookies() # 清除 Cookie
+        clear_login_cookies()
         time.sleep(0.5)
         st.rerun()
 
@@ -119,8 +122,17 @@ else:
             response = supabase.table("job_applications").select("*").eq("user_id", uid).order('created_at', desc=True).execute()
             df = pd.DataFrame(response.data)
             if not df.empty:
-                df['dt_object'] = pd.to_datetime(df['created_at'])
-                df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d %H:00')
+                # --- 核心修改：时区转换 ---
+                # 1. 将字符串转换为 datetime 对象，并标记为 UTC 时区
+                df['dt_object'] = pd.to_datetime(df['created_at'], utc=True)
+                
+                # 2. 转换为你指定的本地时区
+                # 注意：这里会根据 LOCAL_TIMEZONE 自动调整小时偏移
+                df['dt_object'] = df['dt_object'].dt.tz_convert(LOCAL_TIMEZONE)
+                
+                # 3. 格式化显示 (修复了原代码中强制分钟为 00 的问题，改为显示实际分钟)
+                df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d %H:%M')
+                
                 df = df.reset_index(drop=True)
                 df.index = df.index + 1
                 df.insert(0, '显示序号', df.index)
@@ -132,7 +144,6 @@ else:
     df = load_my_data(st.session_state.user.id)
 
     if not df.empty:
-        # --- 1. 数据统计与可视化 (保持不变) ---
         st.subheader("📊 数据概览")
         m1, m2, m3 = st.columns(3)
         total_apps = len(df)
@@ -156,6 +167,7 @@ else:
 
         with col_right:
             st.markdown("**投递周趋势**")
+            # 趋势图使用转换后的 dt_object 确保按本地日期统计
             df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
             trend_df = df.groupby('week').size().reset_index(name='count')
             trend_df = trend_df.sort_values('week')
@@ -165,12 +177,10 @@ else:
 
         st.divider()
 
-        # --- 2. 列表区域 (保持不变) ---
         st.subheader("📋 投递明细列表")
         st.dataframe(df[['显示序号', 'formatted_date', 'title', 'company', 'location', 'status']], use_container_width=True, hide_index=True)
         st.divider()
 
-        # --- 3. 内容管理 (保持不变) ---
         st.subheader("🛠️ 条目管理")
         job_options = df.apply(lambda x: f"序号 {x['显示序号']}: {x['title']} @ {x['company']}", axis=1).tolist()
         sel = st.selectbox("请选择要操作的行:", ["-- 请选择 --"] + job_options)
