@@ -80,7 +80,7 @@ def auth_ui():
                         st.session_state.user = res.user
                         
                         # --- 设置 3 小时免登录 ---
-                        expires = datetime.datetime.now() + datetime.timedelta(hours=3)
+                        expires = datetime.datetime.now() + datetime.timedelta(hours=0.5)
                         
                         cookie_manager.set("sb_access_token", res.session.access_token, expires_at=expires, key="set_at")
                         cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=expires, key="set_rt")
