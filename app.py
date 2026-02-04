@@ -3,17 +3,13 @@ from supabase import create_client
 import pandas as pd
 import plotly.express as px
 import time
-import pytz  # 确保环境中有这个库，如果没有，pd.to_datetime 也能处理大部分情况
+import pytz 
 
 # --- 配置区 ---
 URL = "https://ucabuiwtvhpyqehaytxj.supabase.co"
 KEY = "sb_publishable_qRsPp469HJzOmpTc-KM-QQ_dNGZoKRj"
 
-# 设置你想要显示的本地时区
-# 如果你在中国，请使用 'Asia/Shanghai' (UTC+8)
-# 如果你在欧洲（如德国/法国），请使用 'Europe/Berlin' (UTC+1/UTC+2)
-# 如果你在英国，请使用 'Europe/London'
-LOCAL_TIMEZONE = 'Asia/Shanghai' 
+# [修改点 1] 删除手动配置的 LOCAL_TIMEZONE，改为后续动态获取
 
 @st.cache_resource
 def init_connection():
@@ -21,11 +17,11 @@ def init_connection():
 
 supabase = init_connection()
 
-# --- 免登录逻辑配置 ---
+# --- Cookie 与时区管理逻辑 ---
 THREE_HOURS = 3 * 60 * 60  # 10800 秒
 
 def set_login_cookies(user_id, email):
-    """通过 JS 注入设置浏览器 Cookie"""
+    """通过 JS 注入设置身份验证 Cookie"""
     expiry_ts = time.time() + THREE_HOURS
     js_code = f"""
     <script>
@@ -52,9 +48,31 @@ def clear_login_cookies():
     document.cookie = "job_scout_uid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "job_scout_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "job_scout_expiry=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "job_scout_timezone=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     </script>
     """
     st.components.v1.html(js_code, height=0)
+
+def ensure_timezone_cookie():
+    """
+    [修改点 2] 自动检测浏览器时区
+    如果 Cookie 中没有时区信息，则注入 JS 获取浏览器时区并写入 Cookie。
+    """
+    # 尝试从 cookie 获取时区
+    tz_cookie = st.context.cookies.get("job_scout_timezone")
+    
+    if not tz_cookie:
+        # 如果没有找到 cookie，注入 JS 获取浏览器时区
+        # Intl.DateTimeFormat().resolvedOptions().timeZone 会返回如 'Asia/Shanghai'
+        js_code = """
+        <script>
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.cookie = "job_scout_timezone=" + tz + "; path=/; max-age=31536000";
+        </script>
+        """
+        st.components.v1.html(js_code, height=0)
+        return 'UTC' # 首次加载尚未写入，暂时默认 UTC
+    return tz_cookie
 
 # --- 初始化 Session State 逻辑 ---
 if "user" not in st.session_state:
@@ -66,6 +84,9 @@ if "user" not in st.session_state:
         st.session_state.user = type('User', (object,), {'id': c_uid, 'email': c_email})
     else:
         st.session_state.user = None
+
+# 获取当前用户时区 (需要在页面加载早期执行)
+current_user_timezone = ensure_timezone_cookie()
 
 # --- 身份验证界面 ---
 def auth_ui():
@@ -107,6 +128,9 @@ else:
     st.sidebar.success(f"已登录: {st.session_state.user.email}")
     st.sidebar.info(f"🔑 你的 User ID (用于插件):\n\n{st.session_state.user.id}")
     
+    # 可选：在侧边栏显示当前检测到的时区，方便调试
+    # st.sidebar.caption(f"当前显示时区: {current_user_timezone}")
+
     if st.sidebar.button("🚪 退出登录"):
         supabase.auth.sign_out()
         st.session_state.user = None
@@ -116,21 +140,24 @@ else:
 
     st.title("💼 我的申请追踪看板")
 
+    # [修改点 3] 将时区作为参数传入，避免缓存使用了旧时区
     @st.cache_data(ttl=2)
-    def load_my_data(uid):
+    def load_my_data(uid, target_timezone):
         try:
             response = supabase.table("job_applications").select("*").eq("user_id", uid).order('created_at', desc=True).execute()
             df = pd.DataFrame(response.data)
             if not df.empty:
-                # --- 核心修改：时区转换 ---
                 # 1. 将字符串转换为 datetime 对象，并标记为 UTC 时区
                 df['dt_object'] = pd.to_datetime(df['created_at'], utc=True)
                 
-                # 2. 转换为你指定的本地时区
-                # 注意：这里会根据 LOCAL_TIMEZONE 自动调整小时偏移
-                df['dt_object'] = df['dt_object'].dt.tz_convert(LOCAL_TIMEZONE)
+                # 2. 转换为动态获取的本地时区
+                try:
+                    df['dt_object'] = df['dt_object'].dt.tz_convert(target_timezone)
+                except Exception:
+                    # 如果浏览器时区识别失败（极其罕见），回退到 UTC
+                    df['dt_object'] = df['dt_object'].dt.tz_convert('UTC')
                 
-                # 3. 格式化显示 (修复了原代码中强制分钟为 00 的问题，改为显示实际分钟)
+                # 3. 格式化显示
                 df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d %H:%M')
                 
                 df = df.reset_index(drop=True)
@@ -141,7 +168,8 @@ else:
             st.warning(f"数据加载异常: {str(ex)}")
             return pd.DataFrame()
 
-    df = load_my_data(st.session_state.user.id)
+    # 加载数据时传入当前检测到的时区
+    df = load_my_data(st.session_state.user.id, current_user_timezone)
 
     if not df.empty:
         st.subheader("📊 数据概览")
