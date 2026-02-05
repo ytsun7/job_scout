@@ -23,6 +23,7 @@ def inject_custom_css():
     st.markdown(f"""
         <style>
         .stApp {{ background-color: {UI_CONFIG["bg_light"]}; }}
+        /* 卡片容器样式 */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: white;
             border-radius: {UI_CONFIG["card_border_radius"]};
@@ -30,6 +31,7 @@ def inject_custom_css():
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }}
+        /* 按钮样式优化 */
         .stButton>button {{
             width: 100%;
             border-radius: 8px;
@@ -58,7 +60,6 @@ def init_connection():
     return create_client(URL, KEY)
 
 supabase = init_connection()
-# 初始化的管理器必须有一个全局唯一的 key
 cookie_manager = stx.CookieManager(key="main_auth_manager")
 
 # 防止闪烁的同步机制
@@ -107,7 +108,6 @@ def auth_ui():
                             if res.user:
                                 st.session_state.user = res.user
                                 expires = datetime.datetime.now() + datetime.timedelta(hours=3)
-                                # --- 修复点：设置唯一的 Key ---
                                 cookie_manager.set("sb_access_token", res.session.access_token, expires_at=expires, key="set_at_login")
                                 cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=expires, key="set_rt_login")
                                 st.success("登录成功！")
@@ -137,7 +137,6 @@ else:
         if st.button("🚪 退出登录"):
             supabase.auth.sign_out()
             st.session_state.user = None
-            # --- 修复点：删除时也需要唯一的 Key ---
             cookie_manager.delete("sb_access_token", key="del_at_logout")
             cookie_manager.delete("sb_refresh_token", key="del_rt_logout")
             if 'cookie_sync_done' in st.session_state:
@@ -166,7 +165,7 @@ else:
     df = load_my_data(user.id)
 
     if not df.empty:
-        # --- 数据统计 ---
+        # --- 数据统计指标 ---
         st.subheader("📊 数据概览")
         m1, m2, m3 = st.columns(3)
         m1.metric("总申请数", len(df))
@@ -174,22 +173,18 @@ else:
         m3.metric("收到 Offer", len(df[df['status'] == 'offer']))
 
         st.divider()
-        col_left, col_right = st.columns([1, 1])
-        with col_left:
-            st.markdown("**状态分布**")
-            status_counts = df['status'].value_counts().reset_index()
-            status_counts.columns = ['状态', '数量']
-            fig_pie = px.pie(status_counts, values='数量', names='状态', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig_pie.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
-            st.plotly_chart(fig_pie, use_container_width=True)
 
-        with col_right:
-            st.markdown("**投递周趋势**")
-            df['week'] = df['dt_object'].dt.to_period('W').apply(lambda r: r.start_time)
-            trend_df = df.groupby('week').size().reset_index(name='count')
-            fig_trend = px.bar(trend_df, x='week', y='count', color_discrete_sequence=[UI_CONFIG["primary_color"]])
-            fig_trend.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=300)
-            st.plotly_chart(fig_trend, use_container_width=True)
+        # --- 图表区域：仅保留状态分布 ---
+        col_chart, col_empty = st.columns([1.5, 1]) # 让饼图稍微靠左展示
+        with col_chart:
+            with st.container(border=True):
+                st.markdown("**岗位状态分布**")
+                status_counts = df['status'].value_counts().reset_index()
+                status_counts.columns = ['状态', '数量']
+                fig_pie = px.pie(status_counts, values='数量', names='状态', hole=0.5, 
+                                color_discrete_sequence=px.colors.qualitative.Pastel)
+                fig_pie.update_layout(margin=dict(t=30, b=10, l=10, r=10), height=350, showlegend=True)
+                st.plotly_chart(fig_pie, use_container_width=True)
 
         # --- 列表区域 ---
         st.subheader("📋 投递明细列表")
@@ -230,7 +225,9 @@ else:
                     desc = st.text_area("职位描述", value=row['description'], height=150)
                     
                     if st.form_submit_button("💾 保存修改"):
-                        supabase.table("job_applications").update({"title": t, "company": c, "status": s, "location": l, "description": desc}).eq("id", row['id']).execute()
+                        supabase.table("job_applications").update({
+                            "title": t, "company": c, "status": s, "location": l, "description": desc
+                        }).eq("id", row['id']).execute()
                         st.cache_data.clear()
                         st.success("修改已保存！")
                         time.sleep(0.5)
