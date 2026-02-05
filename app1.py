@@ -7,7 +7,7 @@ import time
 import datetime
 
 # ==========================================
-# 0. 国际化与文案配置
+# 0. 国际化与文案配置 (I18n)
 # ==========================================
 if 'language' not in st.session_state:
     st.session_state.language = 'ZH'
@@ -91,23 +91,24 @@ TRANSLATIONS = {
 }
 
 # ==========================================
-# 1. UI 配色方案更新 (基于图片调色盘)
+# 1. UI 主题配置 (基于图1调色盘)
 # ==========================================
-P_LAVENDER = "#E3DFFF"
-P_THISTLE = "#D3C0CD"
-P_ROSY_TAUPE = "#B19994"
-P_DUSTY_TAUPE = "#937666"
-P_GRAPHITE = "#3D3A4B"
+C_LAVENDER = "#E3DFFF"
+C_THISTLE = "#D3C0CD"
+C_ROSY_TAUPE = "#B19994"
+C_DUSTY_TAUPE = "#937666"
+C_GRAPHITE = "#3D3A4B"
 
 THEME = {
-    "bg_color": P_LAVENDER,
-    "sidebar_bg": P_GRAPHITE,
-    "card_bg": "rgba(255, 255, 255, 0.8)",
-    "primary": P_GRAPHITE,
-    "accent": P_DUSTY_TAUPE,
-    "text_main": P_GRAPHITE,
-    "text_light": P_ROSY_TAUPE,
-    "border_color": P_THISTLE
+    "bg_color": C_LAVENDER,
+    "sidebar_bg": C_GRAPHITE,
+    "card_bg_glass": "rgba(255, 255, 255, 0.75)", 
+    "glass_border": "rgba(61, 58, 75, 0.1)",
+    "primary": C_GRAPHITE,
+    "accent_gold": C_DUSTY_TAUPE,
+    "text_main": C_GRAPHITE,
+    "text_light": C_ROSY_TAUPE,
+    "highlight": C_THISTLE,
 }
 
 st.set_page_config(page_title="Nordic Flow", layout="wide", page_icon="📖")
@@ -119,88 +120,123 @@ def inject_nordic_glass_css():
         
         .stApp {{
             background-color: {THEME['bg_color']};
-            background-image: radial-gradient(circle at 2px 2px, {P_THISTLE} 1px, transparent 0);
-            background-size: 48px 48px;
-            font-family: 'Source Serif Pro', serif;
+            background-image: radial-gradient(circle at 2px 2px, {C_THISTLE} 1px, transparent 0);
+            background-size: 40px 40px;
+            font-family: 'Source Serif Pro', 'Noto Serif SC', serif;
             color: {THEME['text_main']};
         }}
 
         header[data-testid="stHeader"] {{ background-color: transparent !important; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 卡片美化 --- */
+        /* --- 书卷感卡片 --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
-            background-color: {THEME['card_bg']};
-            backdrop-filter: blur(20px);
-            border: 1px solid {THEME['border_color']} !important;
+            background-color: {THEME['card_bg_glass']};
+            backdrop-filter: blur(15px);
+            border: 1px solid {THEME['glass_border']} !important;
             border-radius: 4px;
             padding: 30px;
-            box-shadow: 0 12px 40px rgba(61, 58, 75, 0.05);
+            box-shadow: 0 10px 30px rgba(61, 58, 75, 0.05);
             margin-bottom: 25px;
         }}
 
-        /* --- 侧边栏 --- */
+        /* --- 侧边栏优化 --- */
         section[data-testid="stSidebar"] {{
             background-color: {THEME['sidebar_bg']};
+            border-right: none;
         }}
         section[data-testid="stSidebar"] * {{
-            color: {P_LAVENDER} !important;
+            color: {C_LAVENDER} !important;
         }}
         
         /* --- 按钮 (Dusty Taupe Accent) --- */
         button[kind="primary"] {{
-            background-color: {THEME['accent']} !important;
+            background-color: {THEME['accent_gold']} !important;
             color: white !important;
             border: none !important;
             border-radius: 2px;
             padding: 0.6rem 1.5rem;
             font-family: 'Playfair Display', serif;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            letter-spacing: 0.5px;
         }}
         button[kind="primary"]:hover {{
-            background-color: {P_ROSY_TAUPE} !important;
+            background-color: {C_ROSY_TAUPE} !important;
+            box-shadow: 0 4px 15px rgba(147, 118, 102, 0.3);
             transform: translateY(-1px);
         }}
         
         button[kind="secondary"] {{
             background-color: transparent !important;
-            border: 1px solid {THEME['border_color']} !important;
+            border: 1px solid {THEME['glass_border']} !important;
             color: {THEME['text_main']} !important;
             border-radius: 2px;
+            font-family: 'Source Serif Pro', serif;
+        }}
+        button[kind="secondary"]:hover {{
+            border-color: {THEME['accent_gold']} !important;
+            color: {THEME['accent_gold']} !important;
         }}
 
         /* --- 输入框 --- */
         input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
-            background-color: rgba(255, 255, 255, 0.5) !important;
+            background-color: rgba(255, 255, 255, 0.4) !important;
             border: none !important;
-            border-bottom: 1px solid {THEME['border_color']} !important;
+            border-bottom: 1px solid {THEME['glass_border']} !important;
             border-radius: 0px !important;
+            font-family: 'Source Serif Pro', serif;
         }}
-        input:focus {{
-            border-bottom: 1px solid {THEME['accent']} !important;
+        input:focus, textarea:focus {{
+            border-bottom: 1px solid {THEME['accent_gold']} !important;
+            box-shadow: none !important;
         }}
 
         /* --- 标题 --- */
         h1, h2, h3 {{ 
             color: {THEME['primary']} !important; 
             font-family: 'Playfair Display', serif !important;
-        }}
-
-        /* 指标数字 */
-        div[data-testid="stMetricValue"] > div {{
-            color: {THEME['accent']} !important;
-            font-family: 'Playfair Display', serif;
+            font-weight: 600 !important;
+            letter-spacing: -0.02em; 
         }}
         
-        /* 表格头 */
-        [data-testid="stHeader"] {{ color: {THEME['text_main']} !important; }}
+        /* 指标数字强调 */
+        div[data-testid="stMetricValue"] > div {{
+            color: {C_DUSTY_TAUPE} !important;
+            font-family: 'Playfair Display', serif;
+        }}
+
+        /* --- 数据表 --- */
+        div[data-testid="stDataFrame"] {{ 
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }}
+
+        code, .stCode {{
+            font-family: 'JetBrains Mono', monospace !important;
+            background-color: rgba(61, 58, 75, 0.05) !important;
+            color: {C_GRAPHITE};
+            font-size: 0.8rem;
+        }}
+
+        .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
+        .stTabs [data-baseweb="tab"] {{
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: {THEME['text_light']};
+        }}
+        .stTabs [aria-selected="true"] {{
+            color: {THEME['accent_gold']} !important;
+            border-bottom-color: {THEME['accent_gold']} !important;
+        }}
         </style>
     """, unsafe_allow_html=True)
 
 inject_nordic_glass_css()
 
 # ==========================================
-# 2. 核心逻辑 (保持不变)
+# 2. 核心逻辑 (与原代码一致)
 # ==========================================
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
@@ -217,7 +253,7 @@ if 'cookie_sync_done' not in st.session_state:
     with placeholder.container():
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-            st.markdown(f"<p style='text-align:center; margin-top:100px; font-family:JetBrains Mono; color:{THEME['accent']}'>// {t('loading')}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align:center; margin-top:100px; font-family:JetBrains Mono; color:{THEME['accent_gold']}'>// {t('loading')}</p>", unsafe_allow_html=True)
             _ = cookie_manager.get_all()
             time.sleep(1.2)
     st.session_state.cookie_sync_done = True
@@ -248,27 +284,28 @@ def auth_ui():
         st.markdown(f"""
             <div style="text-align: center; margin-bottom: 40px;">
                 <h1 style="font-size: 2.8rem; margin: 0; color: {THEME['primary']};">{t('app_name')}</h1>
-                <div style="width: 30px; height: 1px; background: {THEME['accent']}; margin: 20px auto;"></div>
-                <p style="color: {THEME['text_light']}; font-style: italic;">{t('slogan')}</p>
+                <div style="width: 30px; height: 1px; background: {THEME['accent_gold']}; margin: 20px auto;"></div>
+                <p style="color: {THEME['text_light']}; font-style: italic; font-size: 1rem;">{t('slogan')}</p>
             </div>
         """, unsafe_allow_html=True)
         
         with st.container(border=True):
             tab1, tab2 = st.tabs([t("tab_login"), t("tab_register")])
             with tab1:
-                with st.form("login_form"):
+                with st.form("login_form", clear_on_submit=False):
                     e = st.text_input(t("lbl_email"), placeholder=t("ph_email"))
                     p = st.text_input(t("lbl_pwd"), type="password")
+                    st.markdown("<br>", unsafe_allow_html=True)
                     if st.form_submit_button(t("btn_connect"), type="primary", use_container_width=True):
                         try:
                             res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                             if res.user:
                                 st.session_state.user = res.user
                                 exp = datetime.datetime.now() + datetime.timedelta(hours=3)
-                                cookie_manager.set("sb_access_token", res.session.access_token, expires_at=exp)
-                                cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=exp)
+                                cookie_manager.set("sb_access_token", res.session.access_token, expires_at=exp, key="set_at")
+                                cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=exp, key="set_rt")
                                 st.rerun()
-                        except: st.error("Verification Failed")
+                        except Exception as ex: st.error("Verification Failed.")
             with tab2:
                 with st.form("signup_form"):
                     ne = st.text_input(t("lbl_email"))
@@ -277,7 +314,7 @@ def auth_ui():
                         try:
                             supabase.auth.sign_up({"email": ne, "password": np})
                             st.success(t("reg_sent"))
-                        except: st.error("Error")
+                        except Exception as ex: st.error(str(ex))
         
         st.markdown("<br>", unsafe_allow_html=True)
         l1, l2, l3 = st.columns([1,2,1])
@@ -288,22 +325,33 @@ def auth_ui():
                 st.rerun()
 
 # ==========================================
-# 4. 主程序 (看板 & 归档)
+# 4. 主程序
 # ==========================================
 if not user:
     auth_ui()
 else:
     with st.sidebar:
-        st.markdown(f"<h2 style='color:{P_LAVENDER} !important;'>{t('app_name')}</h2>", unsafe_allow_html=True)
-        st.caption(f"CONNECTED // {user.email.split('@')[0]}")
+        st.markdown(f"""
+            <div style="padding: 10px 0 30px 0;">
+                <h2 style="color: {C_LAVENDER} !important; font-size: 1.5rem; letter-spacing: 1px;">{t('app_name')}</h2>
+                <p style="color: {C_THISTLE} !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.2.0 // STABLE</p>
+            </div>
+        """, unsafe_allow_html=True)
         
-        st.markdown("<br>", unsafe_allow_html=True)
+        with st.container():
+            st.markdown(f"""
+                <div style="background: rgba(227, 223, 255, 0.1); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <div style="font-size: 0.7rem; color: {C_THISTLE}; text-transform: uppercase;">Current User</div>
+                    <div style="font-family: 'Playfair Display'; font-size: 1.1rem; color: white;">{user.email.split('@')[0]}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
         if st.button(t("nav_dashboard"), use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'; st.rerun()
         if st.button(t("nav_archive"), use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
             st.session_state.page = 'archive'; st.rerun()
 
-        st.markdown("<div style='height: 45vh;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 40vh;'></div>", unsafe_allow_html=True)
         if st.button(t("logout"), type="secondary", use_container_width=True):
             supabase.auth.sign_out()
             st.session_state.user = None
@@ -320,6 +368,7 @@ else:
                 df['dt_object'] = pd.to_datetime(df['created_at'])
                 df['date_str'] = df['dt_object'].dt.strftime('%Y-%m-%d')
                 df = df.reset_index(drop=True)
+                df.insert(0, 'id_display', df.index + 1)
             return df
         except: return pd.DataFrame()
 
@@ -331,14 +380,15 @@ else:
     if st.session_state.page == 'dashboard':
         hour = datetime.datetime.now().hour
         greet = t("greeting_morning") if hour < 12 else (t("greeting_afternoon") if hour < 18 else t("greeting_evening"))
+        
         st.markdown(f"<h1>{greet}</h1>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: {THEME['text_light']};'>{t('greeting_sub')}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: {THEME['text_light']}; font-style: italic; margin-top: -15px;'>{t('greeting_sub')}</p>", unsafe_allow_html=True)
 
         if active_df.empty:
             st.info(t('empty_desc'))
         else:
-            # Metrics
             m1, m2, m3, m4 = st.columns(4)
+            # 使用调色盘中的深浅色处理图表
             with m1: st.metric(t("metric_active"), len(active_df[active_df['status'].isin(['applied', 'interviewing'])]))
             with m2: st.metric(t("metric_interview"), len(active_df[active_df['status'] == 'interviewing']))
             with m3: st.metric(t("metric_offer"), len(active_df[active_df['status'] == 'offer']))
@@ -346,42 +396,45 @@ else:
                 rate = (len(active_df[active_df['status'] != 'applied']) / len(active_df) * 100) if not active_df.empty else 0
                 st.metric(t("metric_rate"), f"{rate:.1f}%")
 
-            # Content
             c_main, c_side = st.columns([2, 1])
             with c_main:
                 with st.container(border=True):
                     st.markdown(f"### {t('list_title')}")
                     show_df = active_df.head(6).copy()
-                    show_df['s_disp'] = show_df['status'].map(status_map)
+                    show_df['s_disp'] = show_df['status'].map(lambda x: status_map.get(x, x))
                     st.dataframe(show_df, column_config={
-                        "date_str": t("col_date"), "company": t("col_company"), "title": t("col_role"), "s_disp": t("col_status")
+                        "date_str": st.column_config.TextColumn(t("col_date")),
+                        "s_disp": st.column_config.TextColumn(t("col_status")),
+                        "company": st.column_config.TextColumn(t("col_company")),
+                        "title": st.column_config.TextColumn(t("col_role")),
                     }, column_order=("date_str", "company", "title", "s_disp"), use_container_width=True, hide_index=True)
 
             with c_side:
                 with st.container(border=True):
                     st.markdown(f"### {t('chart_title')}")
                     counts = active_df['status'].map(status_map).value_counts().reset_index()
-                    fig = px.pie(counts, values='count', names='status', hole=0.75, 
-                                 color_discrete_sequence=[P_GRAPHITE, P_DUSTY_TAUPE, P_ROSY_TAUPE, P_THISTLE])
+                    # 饼图使用图1中的系列色调
+                    fig = px.pie(counts, values='count', names='status', hole=0.8, 
+                                 color_discrete_sequence=[C_GRAPHITE, C_DUSTY_TAUPE, C_ROSY_TAUPE, C_THISTLE])
                     fig.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=200, showlegend=False, paper_bgcolor='rgba(0,0,0,0)')
                     st.plotly_chart(fig, use_container_width=True)
 
             with st.container(border=True):
                 st.markdown(f"### {t('manage_title')}")
                 job_list = active_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
-                sel = st.selectbox(t("search_label"), [""] + job_list, label_visibility="collapsed")
+                sel = st.selectbox(t("search_label"), [""] + job_list, label_visibility="collapsed", placeholder=t("search_ph"))
                 if sel:
                     row = active_df.iloc[job_list.index(sel)]
                     with st.form("edit_v4"):
                         ca, cb = st.columns(2)
-                        nt = ca.text_input(t("input_title"), value=row['title'])
-                        nc = cb.text_input(t("input_company"), value=row['company'])
-                        ns = ca.selectbox(t("input_status"), list(status_map.keys())[:-1], index=list(status_map.keys()).index(row['status']), format_func=lambda x: status_map[x])
-                        nl = cb.text_input(t("input_loc"), value=row['location'])
-                        nd = st.text_area(t("input_note"), value=row['description'])
+                        new_t = ca.text_input(t("input_title"), value=row['title'])
+                        new_c = cb.text_input(t("input_company"), value=row['company'])
+                        new_s = ca.selectbox(t("input_status"), list(status_map.keys())[:-1], index=list(status_map.keys()).index(row['status']), format_func=lambda x: status_map[x])
+                        new_l = cb.text_input(t("input_loc"), value=row['location'])
+                        new_d = st.text_area(t("input_note"), value=row['description'])
                         b1, b2, b3 = st.columns([1,1,3])
                         if b1.form_submit_button(t("btn_save"), type="primary"):
-                            supabase.table("job_applications").update({"title": nt, "company": nc, "status": ns, "location": nl, "description": nd}).eq("id", row['id']).execute()
+                            supabase.table("job_applications").update({"title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d}).eq("id", row['id']).execute()
                             st.cache_data.clear(); st.rerun()
                         if b2.form_submit_button(t("btn_archive")):
                             supabase.table("job_applications").update({"status": "archived"}).eq("id", row['id']).execute()
