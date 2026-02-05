@@ -55,7 +55,7 @@ TRANSLATIONS = {
         "lang_select": "语言 / Language"
     },
     "EN": {
-        "app_name": "NORDIC FLOW",
+        "app_name": "JOB SCOUT",
         "slogan": "Minimal Data, Lucid Control.",
         "loading": "System Initializing...",
         "tab_login": "LOGIN", "tab_register": "REGISTER",
@@ -337,7 +337,7 @@ else:
         st.markdown(f"""
             <div style="padding: 10px 0 20px 0;">
                 <h2 style="color: white !important; font-size: 1.5rem; letter-spacing: 1px;">{t('app_name')}</h2>
-                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.4.0 // DELETION</p>
+                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V1.0(BETA) // BY YSUN</p>
             </div>
         """, unsafe_allow_html=True)
         
