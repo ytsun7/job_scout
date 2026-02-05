@@ -38,8 +38,8 @@ TRANSLATIONS = {
         "archive_empty": "未检索到归档记录。",
         "btn_restore": "激活记录", "restore_success": "记录已恢复至活跃状态。",
         "restore_ph": "选择要恢复的记录...",
-        "chart_title": "状态分布透视", "list_title": "近期动态追踪",
-        "manage_title": "数据管理终端", "manage_hint": "更新状态或变更数据生命周期。",
+        "chart_title": "状态分布", "list_title": "近期动态追踪",
+        "manage_title": "数据管理终端", "manage_hint": "点击展开以更新状态或变更数据。",
         "search_label": "搜索", "search_ph": "定位活跃记录...",
         "input_title": "岗位名称", "input_company": "公司主体",
         "input_status": "当前阶段", "input_loc": "工作地点",
@@ -51,7 +51,8 @@ TRANSLATIONS = {
         "msg_deleted": "记录已销毁。",
         "empty_desc": "暂无活跃数据流。等待输入。",
         "s_applied": "已投递", "s_interviewing": "面试中", "s_offer": "Offer",
-        "s_rejected": "已拒绝", "s_ghosted": "无回音", "s_archived": "已归档"
+        "s_rejected": "已拒绝", "s_ghosted": "无回音", "s_archived": "已归档",
+        "lang_select": "语言 / Language"
     },
     "EN": {
         "app_name": "NORDIC FLOW",
@@ -73,8 +74,8 @@ TRANSLATIONS = {
         "archive_empty": "No archived records found.",
         "btn_restore": "Restore Record", "restore_success": "Record restored to active status.",
         "restore_ph": "Select record to restore...",
-        "chart_title": "Status Perspective", "list_title": "Recent Activity Track",
-        "manage_title": "Data Management Terminal", "manage_hint": "Update status or change lifecycle.",
+        "chart_title": "Distribution", "list_title": "Recent Activity Track",
+        "manage_title": "Data Management Terminal", "manage_hint": "Click to expand for updates.",
         "search_label": "Search", "search_ph": "Locate active record...",
         "input_title": "Position", "input_company": "Company",
         "input_status": "Current Phase", "input_loc": "Location",
@@ -86,23 +87,24 @@ TRANSLATIONS = {
         "msg_deleted": "Record destroyed.",
         "empty_desc": "No active data stream. Waiting for input.",
         "s_applied": "Applied", "s_interviewing": "Interview", "s_offer": "Offer",
-        "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived"
+        "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived",
+        "lang_select": "Language / 语言"
     }
 }
 
 # ==========================================
-# 1. UI 主题配置: "Elegant Nordic & Archive Gold"
+# 1. UI 主题配置
 # ==========================================
 THEME = {
-    "bg_color": "#F7F8F9",            # 极浅暖灰背景（纸张感）
-    "sidebar_bg": "#1E2B2A",          # 森林黛绿（北欧自然色）
-    "card_bg_glass": "rgba(255, 255, 255, 0.8)", 
+    "bg_color": "#F7F8F9",            
+    "sidebar_bg": "#1E2B2A",          
+    "card_bg_glass": "rgba(255, 255, 255, 0.9)",  # 稍微不透明一点，提升阅读性
     "glass_border": "rgba(0, 0, 0, 0.06)",
-    "primary": "#2D3A3A",             # 墨黛
-    "accent_gold": "#B0926A",         # 莫兰迪金（书卷气息点缀）
-    "text_main": "#2C3333",           # 炭黑
-    "text_light": "#7A8484",          # 烟灰
-    "highlight": "#4B6261",           # 沉稳灰绿
+    "primary": "#2D3A3A",             
+    "accent_gold": "#B0926A",         
+    "text_main": "#2C3333",           
+    "text_light": "#7A8484",          
+    "highlight": "#4B6261",           
 }
 
 st.set_page_config(page_title="Nordic Flow", layout="wide", page_icon="📖")
@@ -119,23 +121,20 @@ def inject_nordic_glass_css():
             font-family: 'Source Serif Pro', 'Noto Serif SC', serif;
             color: {THEME['text_main']};
         }}
-
-        /* 隐藏Streamlit默认元素 */
         header[data-testid="stHeader"] {{ background-color: transparent !important; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 书卷感卡片 --- */
+        /* --- 优化后的卡片样式 --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg_glass']};
             backdrop-filter: blur(20px);
-            border: 0.5px solid {THEME['glass_border']} !important;
-            border-radius: 4px; /* 更锐利的边缘，北欧冷淡风 */
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-            margin-bottom: 25px;
+            border: 1px solid {THEME['glass_border']} !important;
+            border-radius: 8px; /* 圆角稍微大一点，更柔和 */
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
         }}
 
-        /* --- 侧边栏优化 --- */
         section[data-testid="stSidebar"] {{
             background-color: {THEME['sidebar_bg']};
             border-right: none;
@@ -144,29 +143,28 @@ def inject_nordic_glass_css():
             color: #E0E4E4 !important;
         }}
         
-        /* --- 按钮 (Gold Accent & Serif Font) --- */
         button[kind="primary"] {{
             background-color: {THEME['accent_gold']} !important;
             color: white !important;
             border: none !important;
-            border-radius: 2px;
-            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            padding: 0.5rem 1.2rem;
             font-family: 'Playfair Display', serif;
             font-weight: 500;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: all 0.3s ease;
             letter-spacing: 0.5px;
         }}
         button[kind="primary"]:hover {{
             background-color: #967A55 !important;
-            box-shadow: 0 4px 15px rgba(176, 146, 106, 0.3);
+            box-shadow: 0 4px 12px rgba(176, 146, 106, 0.4);
             transform: translateY(-1px);
         }}
         
         button[kind="secondary"] {{
             background-color: transparent !important;
-            border: 0.5px solid rgba(0,0,0,0.1) !important;
+            border: 1px solid rgba(0,0,0,0.1) !important;
             color: {THEME['text_main']} !important;
-            border-radius: 2px;
+            border-radius: 4px;
             font-family: 'Source Serif Pro', serif;
         }}
         button[kind="secondary"]:hover {{
@@ -174,7 +172,6 @@ def inject_nordic_glass_css():
             color: {THEME['accent_gold']} !important;
         }}
 
-        /* --- 输入框 --- */
         input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
             background-color: rgba(255, 255, 255, 0.5) !important;
             border: none !important;
@@ -188,7 +185,6 @@ def inject_nordic_glass_css():
             box-shadow: none !important;
         }}
 
-        /* --- 标题 --- */
         h1, h2, h3 {{ 
             color: {THEME['primary']} !important; 
             font-family: 'Playfair Display', serif !important;
@@ -196,20 +192,19 @@ def inject_nordic_glass_css():
             letter-spacing: -0.02em; 
         }}
         
-        /* --- 数据框/表格 --- */
+        /* 调整 DataFrame 样式，使其不那么拥挤 */
         div[data-testid="stDataFrame"] {{ 
-            padding: 10px;
-            background: white;
-            border-radius: 2px;
+            padding: 5px;
+            background: transparent; 
         }}
 
-        /* 特殊：ID等技术文本 */
-        code, .stCode {{
-            font-family: 'JetBrains Mono', monospace !important;
-            background-color: #F0F2F2 !important;
-            font-size: 0.8rem;
+        /* Expander 样式优化 */
+        .streamlit-expanderHeader {{
+            font-family: 'Playfair Display', serif;
+            color: {THEME['primary']};
+            font-weight: 600;
         }}
-
+        
         /* Tab 样式 */
         .stTabs [data-baseweb="tab-list"] {{ gap: 24px; }}
         .stTabs [data-baseweb="tab"] {{
@@ -267,10 +262,26 @@ def get_current_user():
 user = get_current_user()
 
 # ==========================================
-# 3. 登录页 (Artistic Layout)
+# 3. 登录页 (Layout Optimized)
 # ==========================================
 def auth_ui():
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # UX改进：将语言切换放在右上角，符合用户习惯，防止被遮挡
+    top_col1, top_col2 = st.columns([4, 1])
+    with top_col2:
+        lang = st.segmented_control(
+            "Lang_Switch_Auth", 
+            ["ZH", "EN"], 
+            selection_mode="single", 
+            default=st.session_state.language,
+            label_visibility="collapsed"
+        )
+        if lang and lang != st.session_state.language:
+            st.session_state.language = lang
+            st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1, 1])
     with col:
         st.markdown(f"""
@@ -307,48 +318,43 @@ def auth_ui():
                             supabase.auth.sign_up({"email": ne, "password": np})
                             st.success(t("reg_sent"))
                         except Exception as ex: st.error(str(ex))
-        
-        # 登录页的语言切换（保留原有的）
-        st.markdown("<br>", unsafe_allow_html=True)
-        l1, l2, l3 = st.columns([1,2,1])
-        with l2:
-            lang = st.segmented_control("Language", ["ZH", "EN"], selection_mode="single", default=st.session_state.language)
-            if lang and lang != st.session_state.language:
-                st.session_state.language = lang
-                st.rerun()
 
 # ==========================================
-# 4. 主程序
+# 4. 主程序 (Layout Optimized)
 # ==========================================
 if not user:
     auth_ui()
 else:
+    # --- 侧边栏布局优化 ---
     with st.sidebar:
+        # 顶部：Logo 与 版本
         st.markdown(f"""
-            <div style="padding: 10px 0 30px 0;">
+            <div style="padding: 10px 0 20px 0;">
                 <h2 style="color: white !important; font-size: 1.5rem; letter-spacing: 1px;">{t('app_name')}</h2>
-                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.2.0 // STABLE</p>
+                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.3.0 // STABLE</p>
             </div>
         """, unsafe_allow_html=True)
         
-        with st.container():
-            st.markdown(f"""
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                    <div style="font-size: 0.7rem; color: #7A8484; text-transform: uppercase;">Current User</div>
-                    <div style="font-family: 'Playfair Display'; font-size: 1.1rem; color: white;">{user.email.split('@')[0]}</div>
-                </div>
-            """, unsafe_allow_html=True)
+        # 用户信息卡片
+        st.markdown(f"""
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px; margin-bottom: 30px;">
+                <div style="font-size: 0.7rem; color: #7A8484; text-transform: uppercase;">Current User</div>
+                <div style="font-family: 'Playfair Display'; font-size: 1.1rem; color: white;">{user.email.split('@')[0]}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
+        # 导航区
+        st.caption("NAVIGATION")
         if st.button(t("nav_dashboard"), use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'; st.rerun()
         if st.button(t("nav_archive"), use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
             st.session_state.page = 'archive'; st.rerun()
 
-        # 调整空白高度，为语言切换留出空间
-        st.markdown("<div style='height: 35vh;'></div>", unsafe_allow_html=True)
-        
-        # --- 新增：侧边栏语言切换 (Sidebar Language Switcher) ---
-        # 样式与登录页保持一致，使用 segmented_control
+        # 使用分割线和空白来自然推底，而不是硬编码高度
+        st.markdown("<br><hr style='border-color: rgba(255,255,255,0.1);'><br>", unsafe_allow_html=True)
+
+        # 底部：设置与退出
+        st.caption(t("lang_select"))
         lang_side = st.segmented_control(
             "Lang_Switch_Side", 
             ["ZH", "EN"], 
@@ -360,8 +366,7 @@ else:
         if lang_side and lang_side != st.session_state.language:
             st.session_state.language = lang_side
             st.rerun()
-        # ----------------------------------------------------
-
+        
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button(t("logout"), type="secondary", use_container_width=True):
             supabase.auth.sign_out()
@@ -402,7 +407,7 @@ else:
         if active_df.empty:
             st.info(t('empty_desc'))
         else:
-            # Metrics
+            # 1. 核心指标区 (Metrics) - 保持顶部横向排列
             m1, m2, m3, m4 = st.columns(4)
             metrics_data = [
                 (t("metric_active"), len(active_df[active_df['status'].isin(['applied', 'interviewing'])]), "◈"),
@@ -413,50 +418,70 @@ else:
             for i, (label, val, icon) in enumerate(metrics_data):
                 with [m1, m2, m3, m4][i]:
                     st.markdown(f"""
-                        <div style="border-left: 2px solid {THEME['accent_gold']}; padding-left: 20px; margin: 20px 0;">
+                        <div style="border-left: 2px solid {THEME['accent_gold']}; padding-left: 15px; margin: 10px 0;">
                             <div style="font-size: 0.75rem; color: {THEME['text_light']}; text-transform: uppercase; letter-spacing: 1px;">{label}</div>
-                            <div style="font-family: 'Playfair Display'; font-size: 2.2rem; color: {THEME['primary']}; font-weight: 600;">{val}</div>
+                            <div style="font-family: 'Playfair Display'; font-size: 2.0rem; color: {THEME['primary']}; font-weight: 600;">{val}</div>
                         </div>
                     """, unsafe_allow_html=True)
 
-            # Main Content
-            c_main, c_side = st.columns([2, 1])
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # 2. 核心内容区：左侧大表（详情），右侧图表（概览）
+            # UX改进：给予表格更多空间 (3:1)，因为文字信息需要宽度
+            c_main, c_side = st.columns([3, 1])
+            
             with c_main:
+                st.markdown(f"### {t('list_title')}")
                 with st.container(border=True):
-                    st.markdown(f"### {t('list_title')}")
-                    show_df = active_df.head(6).copy()
+                    show_df = active_df.head(10).copy() # 增加显示条目
                     show_df['s_disp'] = show_df['status'].map(lambda x: status_map.get(x, x))
                     st.dataframe(show_df, column_config={
-                        "date_str": st.column_config.TextColumn(t("col_date")),
-                        "s_disp": st.column_config.TextColumn(t("col_status")),
-                        "company": st.column_config.TextColumn(t("col_company")),
-                        "title": st.column_config.TextColumn(t("col_role")),
+                        "date_str": st.column_config.TextColumn(t("col_date"), width="small"),
+                        "s_disp": st.column_config.TextColumn(t("col_status"), width="small"),
+                        "company": st.column_config.TextColumn(t("col_company"), width="medium"),
+                        "title": st.column_config.TextColumn(t("col_role"), width="large"),
                     }, column_order=("date_str", "company", "title", "s_disp"), use_container_width=True, hide_index=True)
 
             with c_side:
+                st.markdown(f"### {t('chart_title')}")
                 with st.container(border=True):
-                    st.markdown(f"### {t('chart_title')}")
                     counts = active_df['status'].map(status_map).value_counts().reset_index()
-                    fig = px.pie(counts, values='count', names='status', hole=0.8, color_discrete_sequence=[THEME['accent_gold'], THEME['highlight'], '#D1D5D5', '#E5E7E7'])
-                    fig.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=200, showlegend=False, paper_bgcolor='rgba(0,0,0,0)')
+                    fig = px.pie(counts, values='count', names='status', hole=0.7, color_discrete_sequence=[THEME['accent_gold'], THEME['highlight'], '#D1D5D5', '#E5E7E7'])
+                    fig.update_layout(
+                        margin=dict(t=10, b=10, l=10, r=10), 
+                        height=220, 
+                        showlegend=True, 
+                        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+                        paper_bgcolor='rgba(0,0,0,0)'
+                    )
                     st.plotly_chart(fig, use_container_width=True)
 
-            # Management
-            with st.container(border=True):
-                st.markdown(f"### {t('manage_title')}")
+            # 3. 管理区 (Management)
+            # UX改进：将原本占据大量垂直空间的表单放入 Expander (折叠面板)
+            # 只有当用户需要修改时才展开，保持界面清爽。
+            st.markdown("<br>", unsafe_allow_html=True)
+            with st.expander(f"⚙️ {t('manage_title')}", expanded=False):
+                st.info(t('manage_hint'), icon="ℹ️")
+                
                 job_list = active_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
                 sel = st.selectbox(t("search_label"), [""] + job_list, label_visibility="collapsed", placeholder=t("search_ph"))
+                
                 if sel:
                     row = active_df.iloc[job_list.index(sel)]
+                    st.markdown("---")
                     with st.form("edit_v4"):
                         ca, cb = st.columns(2)
                         new_t = ca.text_input(t("input_title"), value=row['title'])
                         new_c = cb.text_input(t("input_company"), value=row['company'])
-                        new_s = ca.selectbox(t("input_status"), list(status_map.keys())[:-1], index=list(status_map.keys()).index(row['status']), format_func=lambda x: status_map[x])
-                        new_l = cb.text_input(t("input_loc"), value=row['location'])
+                        
+                        cc, cd = st.columns(2)
+                        new_s = cc.selectbox(t("input_status"), list(status_map.keys())[:-1], index=list(status_map.keys()).index(row['status']), format_func=lambda x: status_map[x])
+                        new_l = cd.text_input(t("input_loc"), value=row['location'])
+                        
                         new_d = st.text_area(t("input_note"), value=row['description'])
                         
-                        b1, b2, b3 = st.columns([1,1,3])
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        b1, b2, b3 = st.columns([1,1,4])
                         if b1.form_submit_button(t("btn_save"), type="primary"):
                             supabase.table("job_applications").update({"title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d}).eq("id", row['id']).execute()
                             st.cache_data.clear(); st.rerun()
@@ -473,9 +498,14 @@ else:
                 st.dataframe(archived_df, column_config={"date_str": t("col_date"), "company": t("col_company"), "title": t("col_role")}, 
                              column_order=("date_str", "company", "title", "description"), use_container_width=True, hide_index=True)
                 
-                sel_a = st.selectbox(t("btn_restore"), [""] + archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist())
-                if sel_a:
-                    a_row = archived_df.iloc[archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist().index(sel_a)]
-                    if st.button(t("btn_restore"), type="primary"):
-                        supabase.table("job_applications").update({"status": "applied"}).eq("id", a_row['id']).execute()
-                        st.cache_data.clear(); st.rerun()
+                st.markdown("---")
+                c1, c2 = st.columns([3, 1])
+                with c1:
+                    sel_a = st.selectbox(t("btn_restore"), [""] + archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist())
+                with c2:
+                    st.markdown("<br>", unsafe_allow_html=True) # Align button
+                    if sel_a:
+                        a_row = archived_df.iloc[archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist().index(sel_a)]
+                        if st.button(t("btn_restore"), type="primary", use_container_width=True):
+                            supabase.table("job_applications").update({"status": "applied"}).eq("id", a_row['id']).execute()
+                            st.cache_data.clear(); st.rerun()
