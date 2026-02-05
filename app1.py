@@ -39,7 +39,7 @@ TRANSLATIONS = {
         "btn_restore": "激活记录", "restore_success": "记录已恢复至活跃状态。",
         "restore_ph": "选择要恢复的记录...",
         "chart_title": "状态分布", "list_title": "近期动态追踪",
-        "manage_title": "数据管理终端", "manage_hint": "点击展开以更新状态或变更数据。",
+        "manage_title": "数据管理终端", "manage_hint": "点击展开以更新状态、归档或删除记录。",
         "search_label": "搜索", "search_ph": "定位活跃记录...",
         "input_title": "岗位名称", "input_company": "公司主体",
         "input_status": "当前阶段", "input_loc": "工作地点",
@@ -48,7 +48,7 @@ TRANSLATIONS = {
         "col_role": "岗位", "col_status": "状态",
         "btn_save": "确认更新", "btn_archive": "封存归档", "btn_del": "永久删除",
         "msg_archived": "记录已封存。", "msg_updated": "数据已同步。",
-        "msg_deleted": "记录已销毁。",
+        "msg_deleted": "记录已从数据库中永久移除。",
         "empty_desc": "暂无活跃数据流。等待输入。",
         "s_applied": "已投递", "s_interviewing": "面试中", "s_offer": "Offer",
         "s_rejected": "已拒绝", "s_ghosted": "无回音", "s_archived": "已归档",
@@ -75,7 +75,7 @@ TRANSLATIONS = {
         "btn_restore": "Restore Record", "restore_success": "Record restored to active status.",
         "restore_ph": "Select record to restore...",
         "chart_title": "Distribution", "list_title": "Recent Activity Track",
-        "manage_title": "Data Management Terminal", "manage_hint": "Click to expand for updates.",
+        "manage_title": "Data Management Terminal", "manage_hint": "Click to expand for updates, archive or deletion.",
         "search_label": "Search", "search_ph": "Locate active record...",
         "input_title": "Position", "input_company": "Company",
         "input_status": "Current Phase", "input_loc": "Location",
@@ -84,7 +84,7 @@ TRANSLATIONS = {
         "col_role": "Role", "col_status": "Status",
         "btn_save": "Update Confirm", "btn_archive": "Archive", "btn_del": "Delete Permanently",
         "msg_archived": "Record archived.", "msg_updated": "Data synchronized.",
-        "msg_deleted": "Record destroyed.",
+        "msg_deleted": "Record permanently deleted from database.",
         "empty_desc": "No active data stream. Waiting for input.",
         "s_applied": "Applied", "s_interviewing": "Interview", "s_offer": "Offer",
         "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived",
@@ -268,7 +268,6 @@ def render_language_buttons(key_prefix):
     """渲染符合主题的语言切换按钮组"""
     c1, c2 = st.columns(2)
     with c1:
-        # 如果当前是中文，显示为金色Primary样式，否则为透明Secondary样式
         if st.button("中文", key=f"{key_prefix}_zh", type="primary" if st.session_state.language == 'ZH' else "secondary", use_container_width=True):
             st.session_state.language = 'ZH'
             st.rerun()
@@ -283,7 +282,7 @@ def render_language_buttons(key_prefix):
 def auth_ui():
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # 顶部右侧语言切换 - 使用自定义按钮组替代 segmented_control
+    # 顶部右侧语言切换
     top_col1, top_col2 = st.columns([5, 1])
     with top_col2:
        render_language_buttons("auth")
@@ -338,7 +337,7 @@ else:
         st.markdown(f"""
             <div style="padding: 10px 0 20px 0;">
                 <h2 style="color: white !important; font-size: 1.5rem; letter-spacing: 1px;">{t('app_name')}</h2>
-                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.3.1 // VISUAL</p>
+                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.4.0 // DELETION</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -362,7 +361,6 @@ else:
 
         # 底部：语言切换与退出
         st.caption(t("lang_select"))
-        # 使用一致的按钮组样式，而非 segmented_control
         render_language_buttons("sidebar")
         
         st.markdown("<br>", unsafe_allow_html=True)
@@ -453,7 +451,7 @@ else:
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
-            # 3. 管理区 (Management)
+            # 3. 管理区 (Management) - 增加删除功能
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander(f"⚙️ {t('manage_title')}", expanded=False):
                 st.info(t('manage_hint'), icon="ℹ️")
@@ -476,12 +474,18 @@ else:
                         new_d = st.text_area(t("input_note"), value=row['description'])
                         
                         st.markdown("<br>", unsafe_allow_html=True)
-                        b1, b2, b3 = st.columns([1,1,4])
+                        # 更新按钮布局：[Save] [Archive] [Delete]
+                        b1, b2, b3, b4 = st.columns([1, 1, 1, 2])
                         if b1.form_submit_button(t("btn_save"), type="primary"):
                             supabase.table("job_applications").update({"title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d}).eq("id", row['id']).execute()
                             st.cache_data.clear(); st.rerun()
                         if b2.form_submit_button(t("btn_archive")):
                             supabase.table("job_applications").update({"status": "archived"}).eq("id", row['id']).execute()
+                            st.cache_data.clear(); st.rerun()
+                        # 新增删除按钮
+                        if b3.form_submit_button(t("btn_del")):
+                            supabase.table("job_applications").delete().eq("id", row['id']).execute()
+                            st.toast(t("msg_deleted"), icon="🗑️")
                             st.cache_data.clear(); st.rerun()
 
     elif st.session_state.page == 'archive':
