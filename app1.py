@@ -35,6 +35,16 @@ def inject_morandi_css():
             color: {THEME['text_main']};
         }}
 
+        /* --- 关键修复：Header 处理 --- */
+        /* 不要隐藏 header，否则侧边栏按钮会消失。改为背景透明 */
+        header[data-testid="stHeader"] {{
+            background-color: transparent !important;
+        }}
+        /* 仅隐藏顶部的彩虹装饰条 */
+        div[data-testid="stDecoration"] {{
+            visibility: hidden;
+        }}
+
         /* --- 卡片化容器 --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg']};
@@ -79,11 +89,9 @@ def inject_morandi_css():
         }}
 
         /* --- 表格 (DataFrame) 深度美化 --- */
-        /* 移除表格默认边框，使其融入卡片 */
         div[data-testid="stDataFrame"] {{
             border: none !important;
         }}
-        /* 尝试修改表头样式 (Streamlit CSS Hack) */
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
             background-color: {THEME['table_header']} !important;
             border-bottom: 1px solid #eee;
@@ -95,10 +103,9 @@ def inject_morandi_css():
             border-right: 1px solid rgba(0,0,0,0.02);
         }}
 
-        /* --- 隐藏杂项 --- */
+        /* --- 隐藏页脚和汉堡菜单(可选) --- */
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
-        header {{visibility: hidden;}}
         </style>
     """, unsafe_allow_html=True)
 
@@ -220,7 +227,7 @@ else:
             if not df.empty:
                 df['dt_object'] = pd.to_datetime(df['created_at'])
                 df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d')
-                # 状态映射 - 使用视觉统一的Emoji
+                # 状态映射
                 status_map = {"applied": "📝 已投递", "interviewing": "🎙️ 面试中", "offer": "🎉 Offer", "rejected": "🍂 已结束", "ghosted": "🔕 无回音"}
                 df['status_display'] = df['status'].map(lambda x: status_map.get(x, x))
                 df = df.reset_index(drop=True)
@@ -267,7 +274,6 @@ else:
         with c_right:
              with st.container(border=True):
                 st.markdown("### 📋 最近投递")
-                # 这是一个美化后的 DataFrame
                 st.dataframe(
                     df.head(10), 
                     column_config={
@@ -331,7 +337,6 @@ else:
                     time.sleep(0.5); st.rerun()
 
     else:
-        # 空状态
         st.markdown(f"""
         <div style="text-align: center; padding: 50px; background-color: white; border-radius: 16px;">
             <h2 style="color: {THEME['secondary']}">暂无数据</h2>
