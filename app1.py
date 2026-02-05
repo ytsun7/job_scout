@@ -308,7 +308,7 @@ def auth_ui():
                             st.success(t("reg_sent"))
                         except Exception as ex: st.error(str(ex))
         
-        # 语言切换（极简版）
+        # 登录页的语言切换（保留原有的）
         st.markdown("<br>", unsafe_allow_html=True)
         l1, l2, l3 = st.columns([1,2,1])
         with l2:
@@ -344,7 +344,25 @@ else:
         if st.button(t("nav_archive"), use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
             st.session_state.page = 'archive'; st.rerun()
 
-        st.markdown("<div style='height: 40vh;'></div>", unsafe_allow_html=True)
+        # 调整空白高度，为语言切换留出空间
+        st.markdown("<div style='height: 35vh;'></div>", unsafe_allow_html=True)
+        
+        # --- 新增：侧边栏语言切换 (Sidebar Language Switcher) ---
+        # 样式与登录页保持一致，使用 segmented_control
+        lang_side = st.segmented_control(
+            "Lang_Switch_Side", 
+            ["ZH", "EN"], 
+            selection_mode="single", 
+            default=st.session_state.language, 
+            label_visibility="collapsed",
+            key="sidebar_lang_switch"
+        )
+        if lang_side and lang_side != st.session_state.language:
+            st.session_state.language = lang_side
+            st.rerun()
+        # ----------------------------------------------------
+
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button(t("logout"), type="secondary", use_container_width=True):
             supabase.auth.sign_out()
             st.session_state.user = None
