@@ -30,7 +30,7 @@ TRANSLATIONS = {
         "view_api_key": "API 密钥", "lbl_uid": "User ID:",
         "nav_dashboard": "核心看板", "nav_archive": "归档数据",
         "logout": "断开连接",
-        "greeting_morning": "早安。", "greeting_afternoon": "午安。", "greeting_evening": "晚上好。",
+        "greeting_morning": "早上好。", "greeting_afternoon": "下午好。", "greeting_evening": "晚上好。",
         "greeting_sub": "保持专注。数据已同步。",
         "metric_active": "活跃申请数", "metric_interview": "面试进程",
         "metric_offer": "Offer 已获", "metric_rate": "整体回应率",
