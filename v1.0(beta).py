@@ -20,7 +20,7 @@ def t(key):
 TRANSLATIONS = {
     "ZH": {
         "app_name": "JOB SCOUT",
-        "slogan": "理性的数据，感知的温度",
+        "slogan": "BY YSUN",
         "loading": "系统初始化中...",
         "tab_login": "登 录", "tab_register": "注 册",
         "lbl_email": "邮箱地址", "lbl_pwd": "密码", "ph_email": "name@company.com",
@@ -31,7 +31,7 @@ TRANSLATIONS = {
         "nav_dashboard": "核心看板", "nav_archive": "归档数据",
         "logout": "断开连接",
         "greeting_morning": "早上好。", "greeting_afternoon": "下午好。", "greeting_evening": "晚上好。",
-        "greeting_sub": "保持专注。数据已同步。",
+        "greeting_sub": "欢迎回来。",
         "metric_active": "活跃申请数", "metric_interview": "面试进程",
         "metric_offer": "Offer 已获", "metric_rate": "整体回应率",
         "archive_title": "归档数据库", "archive_sub": "已封存的历史数据记录。",
@@ -56,7 +56,7 @@ TRANSLATIONS = {
     },
     "EN": {
         "app_name": "JOB SCOUT",
-        "slogan": "Minimal Data, Lucid Control.",
+        "slogan": "BY YSUN",
         "loading": "System Initializing...",
         "tab_login": "LOGIN", "tab_register": "REGISTER",
         "lbl_email": "Email", "lbl_pwd": "Password", "ph_email": "name@company.com",
@@ -67,7 +67,7 @@ TRANSLATIONS = {
         "nav_dashboard": "Dashboard", "nav_archive": "Archive Data",
         "logout": "Disconnect",
         "greeting_morning": "Good Morning.", "greeting_afternoon": "Good Afternoon.", "greeting_evening": "Good Evening.",
-        "greeting_sub": "Stay focused. Data synchronized.",
+        "greeting_sub": "Welcome Back",
         "metric_active": "Active Applications", "metric_interview": "Interviews",
         "metric_offer": "Offers Received", "metric_rate": "Response Rate",
         "archive_title": "Archive Database", "archive_sub": "Stored historical records.",
@@ -88,7 +88,7 @@ TRANSLATIONS = {
         "empty_desc": "No active data stream. Waiting for input.",
         "s_applied": "Applied", "s_interviewing": "Interview", "s_offer": "Offer",
         "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived",
-        "lang_select": "Language / 语言"
+        "lang_select": "语言 / Language"
     }
 }
 
