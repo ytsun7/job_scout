@@ -98,7 +98,7 @@ TRANSLATIONS = {
 THEME = {
     "bg_color": "#F7F8F9",            
     "sidebar_bg": "#1E2B2A",          
-    "card_bg_glass": "rgba(255, 255, 255, 0.9)",  # 稍微不透明一点，提升阅读性
+    "card_bg_glass": "rgba(255, 255, 255, 0.9)",  
     "glass_border": "rgba(0, 0, 0, 0.06)",
     "primary": "#2D3A3A",             
     "accent_gold": "#B0926A",         
@@ -129,7 +129,7 @@ def inject_nordic_glass_css():
             background-color: {THEME['card_bg_glass']};
             backdrop-filter: blur(20px);
             border: 1px solid {THEME['glass_border']} !important;
-            border-radius: 8px; /* 圆角稍微大一点，更柔和 */
+            border-radius: 8px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             margin-bottom: 20px;
@@ -192,7 +192,7 @@ def inject_nordic_glass_css():
             letter-spacing: -0.02em; 
         }}
         
-        /* 调整 DataFrame 样式，使其不那么拥挤 */
+        /* 调整 DataFrame 样式 */
         div[data-testid="stDataFrame"] {{ 
             padding: 5px;
             background: transparent; 
@@ -262,24 +262,31 @@ def get_current_user():
 user = get_current_user()
 
 # ==========================================
-# 3. 登录页 (Layout Optimized)
+# 3. 辅助组件：一致性 UI 语言切换
+# ==========================================
+def render_language_buttons(key_prefix):
+    """渲染符合主题的语言切换按钮组"""
+    c1, c2 = st.columns(2)
+    with c1:
+        # 如果当前是中文，显示为金色Primary样式，否则为透明Secondary样式
+        if st.button("中文", key=f"{key_prefix}_zh", type="primary" if st.session_state.language == 'ZH' else "secondary", use_container_width=True):
+            st.session_state.language = 'ZH'
+            st.rerun()
+    with c2:
+        if st.button("EN", key=f"{key_prefix}_en", type="primary" if st.session_state.language == 'EN' else "secondary", use_container_width=True):
+            st.session_state.language = 'EN'
+            st.rerun()
+
+# ==========================================
+# 4. 登录页 (Layout Optimized)
 # ==========================================
 def auth_ui():
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # UX改进：将语言切换放在右上角，符合用户习惯，防止被遮挡
-    top_col1, top_col2 = st.columns([4, 1])
+    # 顶部右侧语言切换 - 使用自定义按钮组替代 segmented_control
+    top_col1, top_col2 = st.columns([5, 1])
     with top_col2:
-        lang = st.segmented_control(
-            "Lang_Switch_Auth", 
-            ["ZH", "EN"], 
-            selection_mode="single", 
-            default=st.session_state.language,
-            label_visibility="collapsed"
-        )
-        if lang and lang != st.session_state.language:
-            st.session_state.language = lang
-            st.rerun()
+       render_language_buttons("auth")
 
     st.markdown("<br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1, 1])
@@ -320,7 +327,7 @@ def auth_ui():
                         except Exception as ex: st.error(str(ex))
 
 # ==========================================
-# 4. 主程序 (Layout Optimized)
+# 5. 主程序 (Layout Optimized)
 # ==========================================
 if not user:
     auth_ui()
@@ -331,7 +338,7 @@ else:
         st.markdown(f"""
             <div style="padding: 10px 0 20px 0;">
                 <h2 style="color: white !important; font-size: 1.5rem; letter-spacing: 1px;">{t('app_name')}</h2>
-                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.3.0 // STABLE</p>
+                <p style="color: #7A8484 !important; font-size: 0.8rem; font-family: JetBrains Mono;">V4.3.1 // VISUAL</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -350,22 +357,13 @@ else:
         if st.button(t("nav_archive"), use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
             st.session_state.page = 'archive'; st.rerun()
 
-        # 使用分割线和空白来自然推底，而不是硬编码高度
+        # 使用分割线和空白来自然推底
         st.markdown("<br><hr style='border-color: rgba(255,255,255,0.1);'><br>", unsafe_allow_html=True)
 
-        # 底部：设置与退出
+        # 底部：语言切换与退出
         st.caption(t("lang_select"))
-        lang_side = st.segmented_control(
-            "Lang_Switch_Side", 
-            ["ZH", "EN"], 
-            selection_mode="single", 
-            default=st.session_state.language, 
-            label_visibility="collapsed",
-            key="sidebar_lang_switch"
-        )
-        if lang_side and lang_side != st.session_state.language:
-            st.session_state.language = lang_side
-            st.rerun()
+        # 使用一致的按钮组样式，而非 segmented_control
+        render_language_buttons("sidebar")
         
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button(t("logout"), type="secondary", use_container_width=True):
@@ -407,7 +405,7 @@ else:
         if active_df.empty:
             st.info(t('empty_desc'))
         else:
-            # 1. 核心指标区 (Metrics) - 保持顶部横向排列
+            # 1. 核心指标区 (Metrics)
             m1, m2, m3, m4 = st.columns(4)
             metrics_data = [
                 (t("metric_active"), len(active_df[active_df['status'].isin(['applied', 'interviewing'])]), "◈"),
@@ -426,14 +424,13 @@ else:
 
             st.markdown("<br>", unsafe_allow_html=True)
 
-            # 2. 核心内容区：左侧大表（详情），右侧图表（概览）
-            # UX改进：给予表格更多空间 (3:1)，因为文字信息需要宽度
+            # 2. 核心内容区
             c_main, c_side = st.columns([3, 1])
             
             with c_main:
                 st.markdown(f"### {t('list_title')}")
                 with st.container(border=True):
-                    show_df = active_df.head(10).copy() # 增加显示条目
+                    show_df = active_df.head(10).copy()
                     show_df['s_disp'] = show_df['status'].map(lambda x: status_map.get(x, x))
                     st.dataframe(show_df, column_config={
                         "date_str": st.column_config.TextColumn(t("col_date"), width="small"),
@@ -457,8 +454,6 @@ else:
                     st.plotly_chart(fig, use_container_width=True)
 
             # 3. 管理区 (Management)
-            # UX改进：将原本占据大量垂直空间的表单放入 Expander (折叠面板)
-            # 只有当用户需要修改时才展开，保持界面清爽。
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander(f"⚙️ {t('manage_title')}", expanded=False):
                 st.info(t('manage_hint'), icon="ℹ️")
@@ -503,7 +498,7 @@ else:
                 with c1:
                     sel_a = st.selectbox(t("btn_restore"), [""] + archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist())
                 with c2:
-                    st.markdown("<br>", unsafe_allow_html=True) # Align button
+                    st.markdown("<br>", unsafe_allow_html=True) 
                     if sel_a:
                         a_row = archived_df.iloc[archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist().index(sel_a)]
                         if st.button(t("btn_restore"), type="primary", use_container_width=True):
