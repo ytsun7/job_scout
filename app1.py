@@ -18,9 +18,7 @@ THEME = {
     "accent": "#d8c4b6",             # 奶茶色 (Beige) - 装饰
     "text_main": "#454545",          # 深灰字体 (非纯黑)
     "text_sub": "#8a8a8a",           # 浅灰副标题
-    "success": "#8FA998",            # 柔和绿
-    "warning": "#E6Cba8",            # 柔和橙
-    "danger": "#D29292"              # 柔和红
+    "table_header": "#f2f4f3"        # 极淡的绿色背景用于表头
 }
 
 st.set_page_config(page_title="Job Tracker Pro", layout="wide", page_icon="💼")
@@ -29,7 +27,7 @@ def inject_morandi_css():
     st.markdown(f"""
         <style>
         /* --- 全局重置与字体 --- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         
         .stApp {{
             background-color: {THEME['bg_color']};
@@ -38,7 +36,6 @@ def inject_morandi_css():
         }}
 
         /* --- 卡片化容器 --- */
-        /* 针对所有带边框的容器应用卡片样式 */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg']};
             border: none !important;
@@ -57,7 +54,7 @@ def inject_morandi_css():
         h1 {{ font-size: 2.2rem !important; }}
         h3 {{ font-size: 1.3rem !important; margin-top: 0 !important; }}
 
-        /* --- 按钮美化 (莫兰迪风格) --- */
+        /* --- 按钮美化 --- */
         .stButton>button {{
             background-color: {THEME['primary']};
             color: white;
@@ -69,36 +66,29 @@ def inject_morandi_css():
             box-shadow: 0 4px 6px rgba(124, 144, 130, 0.2);
         }}
         .stButton>button:hover {{
-            background-color: #6a7d70; /*稍微深一点的绿*/
+            background-color: #6a7d70;
             box-shadow: 0 6px 12px rgba(124, 144, 130, 0.3);
             transform: translateY(-1px);
             color: white !important;
         }}
-        /* 次要按钮 (如删除) */
+        /* 次要按钮 */
         button[kind="secondary"] {{
             background-color: transparent;
             color: {THEME['text_sub']};
             border: 1px solid #eee;
         }}
 
-        /* --- Metric 指标卡优化 --- */
-        div[data-testid="stMetric"] {{
-            background-color: white;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #f0f0f0;
-            text-align: center;
-        }}
-        div[data-testid="stMetricLabel"] {{ color: {THEME['text_sub']} !important; font-size: 0.9rem !important; }}
-        div[data-testid="stMetricValue"] {{ color: {THEME['primary']} !important; font-weight: 700 !important; font-size: 1.8rem !important; }}
-
-        /* --- 表格样式 --- */
+        /* --- 表格 (DataFrame) 深度美化 --- */
+        /* 移除表格默认边框，使其融入卡片 */
         div[data-testid="stDataFrame"] {{
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #f0f0f0;
+            border: none !important;
         }}
-        
+        /* 尝试修改表头样式 (Streamlit CSS Hack) */
+        div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
+            background-color: {THEME['table_header']} !important;
+            border-bottom: 1px solid #eee;
+        }}
+
         /* --- 侧边栏 --- */
         section[data-testid="stSidebar"] {{
             background-color: #fdfdfd;
@@ -131,7 +121,7 @@ cookie_manager = stx.CookieManager(key="main_auth_manager")
 if 'cookie_sync_done' not in st.session_state:
     placeholder = st.empty()
     with placeholder.container():
-        st.write("") # Spacer
+        st.write("") 
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
             st.info("🎨 正在加载设计资源...")
@@ -157,13 +147,13 @@ def get_current_user():
 user = get_current_user()
 
 # ==========================================
-# 3. 身份验证界面 (高保真版)
+# 3. 身份验证界面
 # ==========================================
 def auth_ui():
-    st.markdown("<br><br>", unsafe_allow_html=True) # 顶部留白
+    st.markdown("<br><br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
-        with st.container(border=True): # 使用自定义样式的卡片
+        with st.container(border=True):
             st.markdown(f"<h1 style='text-align: center; color: {THEME['primary']};'>Job Tracker</h1>", unsafe_allow_html=True)
             st.markdown("<p style='text-align: center; color: #888; margin-bottom: 30px;'>优雅地管理您的职业旅程</p>", unsafe_allow_html=True)
             
@@ -198,7 +188,7 @@ def auth_ui():
                         except Exception as ex: st.error(f"注册失败: {ex}")
 
 # ==========================================
-# 4. 主程序逻辑 (高保真版)
+# 4. 主程序逻辑
 # ==========================================
 if not user:
     auth_ui()
@@ -230,8 +220,8 @@ else:
             if not df.empty:
                 df['dt_object'] = pd.to_datetime(df['created_at'])
                 df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d')
-                # 状态映射 - 使用更简洁的 Emoji
-                status_map = {"applied": "📝 已投递", "interviewing": "🎙️ 面试中", "offer": "✨ Offer", "rejected": "🍂 已结束", "ghosted": "🔕 无回音"}
+                # 状态映射 - 使用视觉统一的Emoji
+                status_map = {"applied": "📝 已投递", "interviewing": "🎙️ 面试中", "offer": "🎉 Offer", "rejected": "🍂 已结束", "ghosted": "🔕 无回音"}
                 df['status_display'] = df['status'].map(lambda x: status_map.get(x, x))
                 df = df.reset_index(drop=True)
                 df.insert(0, '显示序号', df.index + 1)
@@ -243,20 +233,17 @@ else:
 
     if not df.empty:
         # --- 模块 1: 关键指标 (Metrics) ---
-        # 使用 Columns 布局，CSS 会自动将其渲染为卡片风格
         col_m1, col_m2, col_m3, col_m4 = st.columns(4)
         col_m1.metric("总申请", len(df))
         col_m2.metric("面试中", len(df[df['status'] == 'interviewing']))
         col_m3.metric("Offer", len(df[df['status'] == 'offer']))
-        
-        # 转化率计算
         conversion = len(df[df['status'].isin(['interviewing', 'offer'])])
         rate = conversion / len(df) * 100 if len(df) > 0 else 0
         col_m4.metric("转化率", f"{rate:.1f}%")
         
-        st.markdown("<br>", unsafe_allow_html=True) # 间距
+        st.markdown("<br>", unsafe_allow_html=True)
 
-        # --- 模块 2: 图表与列表的混合布局 ---
+        # --- 模块 2: 图表与列表 ---
         c_left, c_right = st.columns([1, 2])
         
         with c_left:
@@ -264,8 +251,6 @@ else:
                 st.markdown("### 📊 状态分布")
                 status_counts = df['status'].value_counts().reset_index()
                 status_counts.columns = ['状态', '数量']
-                
-                # 莫兰迪配色列表
                 morandi_colors = ['#7c9082', '#9ca8b8', '#d8c4b6', '#e0cdcf', '#aab5a9']
                 
                 fig_pie = px.pie(status_counts, values='数量', names='状态', hole=0.7, 
@@ -276,20 +261,20 @@ else:
                     showlegend=False,
                     annotations=[dict(text=str(len(df)), x=0.5, y=0.5, font_size=24, showarrow=False, font_color=THEME['text_main'])]
                 )
-                # 隐藏背景以融合卡片
                 fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
                 st.plotly_chart(fig_pie, use_container_width=True)
 
         with c_right:
              with st.container(border=True):
                 st.markdown("### 📋 最近投递")
+                # 这是一个美化后的 DataFrame
                 st.dataframe(
-                    df.head(10), # 只显示最近10条
+                    df.head(10), 
                     column_config={
                         "显示序号": st.column_config.NumberColumn("#", width="small"),
-                        "formatted_date": "日期",
-                        "status_display": "状态",
-                        "company": st.column_config.TextColumn("公司", width="medium"),
+                        "formatted_date": st.column_config.TextColumn("投递日期", width="medium"),
+                        "status_display": st.column_config.TextColumn("当前状态", width="medium"),
+                        "company": st.column_config.TextColumn("公司名称", width="medium"),
                         "title": st.column_config.TextColumn("岗位", width="large"),
                     },
                     column_order=("显示序号", "formatted_date", "company", "title", "status_display"),
@@ -317,13 +302,9 @@ else:
                     f1, f2 = st.columns(2)
                     with f1:
                         t = st.text_input("岗位名称", value=row['title'])
-                        
-                        # 状态选择逻辑
                         s_list = ["applied", "interviewing", "offer", "rejected", "ghosted"]
                         s_labels = ["📝 已投递", "🎙️ 面试中", "✨ Offer", "🍂 已结束", "🔕 无回音"]
                         curr_code = row['status'] if row['status'] in s_list else "applied"
-                        
-                        # 这里为了UI好看，我们用 index 定位
                         s_idx = s_list.index(curr_code)
                         s = st.selectbox("当前进度", s_list, index=s_idx, format_func=lambda x: s_labels[s_list.index(x)])
 
@@ -343,7 +324,6 @@ else:
                             st.success("已更新")
                             time.sleep(0.5); st.rerun()
                     
-                # 删除按钮放在Form外面防止误触，但排版在一行
                 if st.button("🗑️ 删除此记录", type="secondary"):
                     supabase.table("job_applications").delete().eq("id", row['id']).execute()
                     st.cache_data.clear()
@@ -351,7 +331,7 @@ else:
                     time.sleep(0.5); st.rerun()
 
     else:
-        # 空状态美化
+        # 空状态
         st.markdown(f"""
         <div style="text-align: center; padding: 50px; background-color: white; border-radius: 16px;">
             <h2 style="color: {THEME['secondary']}">暂无数据</h2>
