@@ -91,15 +91,15 @@ TRANSLATIONS = {
 }
 
 # ==========================================
-# 1. UI 主题配置: Nordic Mineral
+# 1. UI 主题配置: Nordic Mineral & Linen
 # ==========================================
 THEME = {
     "bg_color": "#F4F3F0",           # 亚麻灰
     "sidebar_bg": "#EBEAE6",         # 侧边栏
     "card_bg_glass": "rgba(255, 255, 255, 0.65)", 
     "glass_border": "rgba(74, 93, 88, 0.1)",       
-    "highlight": "#4A5D58",          # 矿物青
-    "primary": "#2C3333",            # 深炭黑
+    "highlight": "#4A5D58",          # 矿物青 (Mineral Green)
+    "primary": "#2C3333",            # 深炭黑 (Charcoal)
     "accent": "#1A1C1C",             # 标题黑
     "text_main": "#2C3333",          
     "text_light": "#7D8582",         
@@ -118,34 +118,52 @@ def inject_custom_css():
             color: {THEME['text_main']};
         }}
 
-        header[data-testid="stHeader"] {{ background-color: transparent !important; }}
+        /* ---------------------------------------------------- */
+        /* 🔧 核心修复：箭头与图标显示 (SVG Fixes)             */
+        /* ---------------------------------------------------- */
+        
+        /* 1. 侧边栏折叠/展开按钮箭头 */
+        [data-testid="stSidebarCollapsedControl"] svg,
+        [data-testid="stSidebarExpandedControl"] svg {{
+            fill: {THEME['primary']} !important;
+            color: {THEME['primary']} !important;
+        }}
+
+        /* 2. 下拉菜单 (Selectbox) 右侧的小箭头 */
+        div[data-baseweb="select"] svg {{
+            fill: {THEME['primary']} !important;
+            color: {THEME['primary']} !important;
+        }}
+        div[data-baseweb="select"] svg path {{
+            fill: {THEME['primary']} !important;
+        }}
+
+        /* 3. 折叠面板 (Expander) 的箭头 */
+        .streamlit-expanderHeader svg {{
+            fill: {THEME['primary']} !important;
+            color: {THEME['primary']} !important;
+        }}
+        .streamlit-expanderHeader svg path {{
+            fill: {THEME['primary']} !important;
+        }}
+
+        /* 4. 数字输入框箭头 */
+        div[data-baseweb="spinbutton"] svg {{
+            fill: {THEME['primary']} !important;
+        }}
+
+        /* 5. 确保 Header 可见但背景透明 (防止按钮消失) */
+        header[data-testid="stHeader"] {{
+            background-color: transparent !important;
+            color: {THEME['primary']} !important;
+        }}
+        
+        /* ---------------------------------------------------- */
+
         div[data-testid="stDecoration"] {{ visibility: hidden; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 修复箭头显示的关键 CSS --- */
-        /* 1. 侧边栏左上角开关箭头 */
-        button[kind="header"] {{
-            color: {THEME['text_main']} !important;
-        }}
-        [data-testid="stSidebarCollapsedControl"] svg, 
-        [data-testid="stSidebarExpandedControl"] svg {{
-            fill: {THEME['text_main']} !important;
-            color: {THEME['text_main']} !important;
-        }}
-        
-        /* 2. 下拉菜单 (Selectbox) 右侧小箭头 */
-        div[data-baseweb="select"] svg {{
-            fill: {THEME['text_main']} !important;
-            color: {THEME['text_main']} !important;
-        }}
-        
-        /* 3. 折叠面板 (Expander) 箭头 */
-        div[data-testid="stExpander"] svg {{
-            fill: {THEME['text_main']} !important;
-            color: {THEME['text_main']} !important;
-        }}
-
-        /* --- 磨砂玻璃卡片 --- */
+        /* --- 磨砂玻璃卡片 (Mineral Glass) --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg_glass']};
             backdrop-filter: blur(20px);
@@ -164,9 +182,11 @@ def inject_custom_css():
         }}
         
         /* --- 按钮样式 --- */
+        
+        /* 主按钮：矿物青 */
         button[kind="primary"] {{
             background-color: {THEME['highlight']} !important;
-            color: #F4F3F0 !important;
+            color: #F4F3F0 !important; 
             border: none !important;
             border-radius: 4px;
             padding: 0.5rem 1.5rem;
@@ -182,6 +202,7 @@ def inject_custom_css():
             box-shadow: 0 6px 15px rgba(74, 93, 88, 0.3);
         }}
         
+        /* 次要按钮：细线框 */
         button[kind="secondary"] {{
             background-color: transparent !important;
             border: 1px solid {THEME['text_light']} !important;
@@ -200,7 +221,7 @@ def inject_custom_css():
             font-size: 0.9rem;
         }}
 
-        /* --- 输入框 --- */
+        /* --- 输入框 (纸张感) --- */
         input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
             background-color: rgba(255,255,255,0.5) !important;
             backdrop-filter: blur(10px);
@@ -233,7 +254,7 @@ def inject_custom_css():
              font-family: 'Sitka', serif;
         }}
 
-        /* --- 字体 --- */
+        /* --- 字体排版 --- */
         h1, h2, h3 {{ 
             color: {THEME['accent']} !important; 
             font-family: 'Sitka', serif !important;
