@@ -7,7 +7,7 @@ import time
 import datetime
 
 # ==========================================
-# 0. 国际化与文案配置 (I18n) - 回归常规表达
+# 0. 国际化与文案配置 (I18n) - 深度汉化版
 # ==========================================
 if 'language' not in st.session_state:
     st.session_state.language = 'ZH'
@@ -19,126 +19,187 @@ def t(key):
 
 TRANSLATIONS = {
     "ZH": {
-        "app_name": "职位申请追踪", 
-        "slogan": "清晰记录每一步职业旅程",
-        "loading": "正在加载...",
+        "app_name": "CAREER FLOW",
+        "slogan": "理性的数据，感知的温度",
+        "loading": "System Initializing...",
         
-        "tab_login": "登录", "tab_register": "注册",
-        "lbl_email": "邮箱", "lbl_pwd": "密码", "ph_email": "name@example.com",
-        "btn_connect": "登录系统", "btn_create": "注册账户",
-        "auth_success": "登录成功", "reg_sent": "验证邮件已发送",
+        # 登录页
+        "tab_login": "登 录",
+        "tab_register": "注 册",
+        "lbl_email": "邮箱地址",
+        "lbl_pwd": "密码",
+        "ph_email": "name@company.com",
+        "btn_connect": "连接系统",
+        "btn_create": "创建 ID",
+        "auth_success": "权限已确认。",
+        "reg_sent": "验证邮件已发送。",
         
-        "console": "菜单", "my_account": "我的账户",
-        "view_api_key": "API 密钥", "lbl_uid": "用户 ID:",
-        "nav_dashboard": "概览看板", "nav_archive": "历史归档",
-        "logout": "退出登录",
+        # 侧边栏
+        "console": "控制台",
+        "my_account": "账户信息",
+        "view_api_key": "API 访问密钥",
+        "lbl_uid": "用户 ID:",
+        "nav_dashboard": "数据看板",
+        "nav_archive": "归档数据库",
+        "logout": "断开连接",
 
-        "greeting_morning": "早上好，", "greeting_afternoon": "下午好，", "greeting_evening": "晚上好，",
-        "greeting_sub": "欢迎回来，查看您的进度。",
+        # 欢迎语
+        "greeting_morning": "早上好。",
+        "greeting_afternoon": "下午好。",
+        "greeting_evening": "晚上好。",
+        "greeting_sub": "保持专注。一切尽在掌控。",
 
-        "metric_active": "进行中", "metric_interview": "面试",
-        "metric_offer": "Offer", "metric_rate": "回复率",
+        # 指标
+        "metric_active": "活跃申请",
+        "metric_interview": "面试进行中",
+        "metric_offer": "收获 Offer",
+        "metric_rate": "整体回应率",
 
-        "archive_title": "归档记录", "archive_sub": "这里存放已结束或搁置的申请记录。",
-        "archive_empty": "暂无归档记录。",
-        "btn_restore": "恢复", "restore_success": "记录已恢复到看板。",
+        # 归档页
+        "archive_title": "归档数据库",
+        "archive_sub": "已归档的历史数据记录。",
+        "archive_empty": "未检索到归档记录。",
+        "btn_restore": "恢复记录",
+        "restore_success": "记录已恢复至活跃状态。",
         "restore_ph": "选择要恢复的记录...",
 
-        "chart_title": "状态分布", "list_title": "最近动态",
-        "manage_title": "记录管理", "manage_hint": "修改信息或更改状态。",
-        "search_label": "搜索", "search_ph": "查找记录...",
+        # 看板与管理
+        "chart_title": "状态分析",
+        "list_title": "近期动态",
+        "manage_title": "记录管理",
+        "manage_hint": "更新状态或管理数据生命周期。",
+        "search_label": "搜索",
+        "search_ph": "选择要编辑的记录...",
         
-        "input_title": "岗位名称", "input_company": "公司",
-        "input_status": "当前状态", "input_loc": "地点",
-        "input_note": "备注",
+        "input_title": "岗位名称",
+        "input_company": "公司",
+        "input_status": "当前阶段",
+        "input_loc": "工作地点",
+        "input_note": "备注 / 随笔",
         
-        "col_date": "日期", "col_company": "公司",
-        "col_role": "岗位", "col_status": "状态",
+        "col_date": "添加日期",
+        "col_company": "公司名称",
+        "col_role": "岗位",
+        "col_status": "当前状态",
         
-        "btn_save": "保存修改", "btn_archive": "归档", "btn_del": "删除",
+        "btn_save": "更新记录",
+        "btn_archive": "归档",
+        "btn_del": "删除",
         
-        "msg_archived": "已归档。", "msg_updated": "保存成功。",
-        "msg_deleted": "已删除。",
-        "empty_desc": "暂无数据。",
+        "msg_archived": "记录已移入归档数据库。",
+        "msg_updated": "数据库已更新。",
+        "msg_deleted": "记录已永久删除。",
+        "empty_desc": "暂无活跃数据。等待新数据录入。",
 
-        "s_applied": "已投递", "s_interviewing": "面试中", "s_offer": "Offer",
-        "s_rejected": "已拒绝", "s_ghosted": "无回音", "s_archived": "已归档"
+        # 状态映射
+        "s_applied": "已投递",
+        "s_interviewing": "面试中",
+        "s_offer": "Offer",
+        "s_rejected": "已拒绝",
+        "s_ghosted": "无回音",
+        "s_archived": "已归档"
     },
     "EN": {
-        "app_name": "Job Application Tracker",
-        "slogan": "Track your career journey clearly.",
-        "loading": "Loading...",
+        "app_name": "CAREER FLOW",
+        "slogan": "Rational Data, Perceived Warmth.",
+        "loading": "System Initializing...",
         
-        "tab_login": "Login", "tab_register": "Register",
-        "lbl_email": "Email", "lbl_pwd": "Password", "ph_email": "name@example.com",
-        "btn_connect": "Login", "btn_create": "Sign Up",
-        "auth_success": "Login successful.", "reg_sent": "Verification email sent.",
-        
-        "console": "Menu", "my_account": "Account",
-        "view_api_key": "API Key", "lbl_uid": "User ID:",
-        "nav_dashboard": "Dashboard", "nav_archive": "Archive",
-        "logout": "Logout",
+        "tab_login": "LOGIN",
+        "tab_register": "REGISTER",
+        "lbl_email": "Email",
+        "lbl_pwd": "Password",
+        "ph_email": "name@company.com",
+        "btn_connect": "CONNECT",
+        "btn_create": "CREATE ID",
+        "auth_success": "Access Granted.",
+        "reg_sent": "Verification email sent.",
 
-        "greeting_morning": "Good Morning,", "greeting_afternoon": "Good Afternoon,", "greeting_evening": "Good Evening,",
-        "greeting_sub": "Welcome back. Check your progress.",
+        "console": "CONTROL",
+        "my_account": "ACCOUNT",
+        "view_api_key": "API Access Key",
+        "lbl_uid": "UID:",
+        "nav_dashboard": "Dashboard",
+        "nav_archive": "Archive Database",
+        "logout": "Disconnect",
 
-        "metric_active": "Active", "metric_interview": "Interviews",
-        "metric_offer": "Offers", "metric_rate": "Response Rate",
+        "greeting_morning": "Good Morning.",
+        "greeting_afternoon": "Good Afternoon.",
+        "greeting_evening": "Good Evening.",
+        "greeting_sub": "Stay focused. Everything is under control.",
 
-        "archive_title": "Archive", "archive_sub": "Stored historical records.",
-        "archive_empty": "No archived records.",
-        "btn_restore": "Restore", "restore_success": "Restored successfully.",
-        "restore_ph": "Select to restore...",
+        "metric_active": "Active Applications",
+        "metric_interview": "Interviews",
+        "metric_offer": "Offers Received",
+        "metric_rate": "Response Rate",
 
-        "chart_title": "Distribution", "list_title": "Recent Activity",
-        "manage_title": "Manage Record", "manage_hint": "Edit details or change status.",
-        "search_label": "Search", "search_ph": "Find record...",
-        
-        "input_title": "Role", "input_company": "Company",
-        "input_status": "Status", "input_loc": "Location",
-        "input_note": "Notes",
-        
-        "col_date": "Date", "col_company": "Company",
-        "col_role": "Role", "col_status": "Status",
-        
-        "btn_save": "Save", "btn_archive": "Archive", "btn_del": "Delete",
-        
-        "msg_archived": "Archived.", "msg_updated": "Saved.",
-        "msg_deleted": "Deleted.",
-        "empty_desc": "No data yet.",
+        "archive_title": "Archive Database",
+        "archive_sub": "Stored historical records.",
+        "archive_empty": "No archived records found.",
+        "btn_restore": "Restore Record",
+        "restore_success": "Record restored to active status.",
+        "restore_ph": "Select record to restore...",
 
-        "s_applied": "Applied", "s_interviewing": "Interview", "s_offer": "Offer",
-        "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived"
+        "chart_title": "Status Analytics",
+        "list_title": "Recent Activity",
+        "manage_title": "Record Management",
+        "manage_hint": "Update status or manage data lifecycle.",
+        "search_label": "Search",
+        "search_ph": "Select record to edit...",
+        
+        "input_title": "Position",
+        "input_company": "Company",
+        "input_status": "Current Phase",
+        "input_loc": "Location",
+        "input_note": "Notes / Remarks",
+        
+        "col_date": "Date Added",
+        "col_company": "Company Name",
+        "col_role": "Role",
+        "col_status": "Status",
+        
+        "btn_save": "Update Record",
+        "btn_archive": "Archive",
+        "btn_del": "Delete",
+        
+        "msg_archived": "Record moved to archive.",
+        "msg_updated": "Database updated.",
+        "msg_deleted": "Record permanently deleted.",
+        "empty_desc": "No active data. Waiting for input.",
+
+        "s_applied": "Applied",
+        "s_interviewing": "Interview",
+        "s_offer": "Offer",
+        "s_rejected": "Rejected",
+        "s_ghosted": "No Response",
+        "s_archived": "Archived"
     }
 }
 
 # ==========================================
-# 1. UI 主题配置: Sitka Serif + Deep Tech Blue
+# 1. UI 主题配置: "Slate & Glass" (板岩与玻璃)
 # ==========================================
 THEME = {
-    "bg_color": "#F5F5F7",           # 极浅的纸张灰 (Paper Grey)
-    "sidebar_bg": "#EBEBEB",         # 稍深一点的侧边栏
-    "card_bg_glass": "rgba(255, 255, 255, 0.7)", # 高通透毛玻璃
-    "glass_border": "rgba(0, 0, 0, 0.06)",       # 极细的深色边框
-    
-    # 颜色策略
-    "primary": "#2D2D2D",            # 深炭灰 (Charcoal) - 侧边栏/主文字
-    "accent": "#000000",             # 纯黑 - 标题
-    "highlight": "#0F2850",          # 深海科技蓝 (Deep Tech Blue) - 仅用于关键操作
-    
-    "text_main": "#1F1F1F",          # 近乎黑
-    "text_light": "#666666",         # 中灰
+    "bg_color": "#F8FAFC",           # 极冷灰 (Cool Grey 50)
+    "sidebar_bg": "#FFFFFF",         # 纯白侧边栏
+    "card_bg": "#FFFFFF",            # 纯白卡片
+    "primary": "#334155",            # 板岩深灰 (Slate 700)
+    "accent": "#0F172A",             # 近乎黑的蓝 (Slate 900)
+    "highlight": "#38BDF8",          # 电光蓝 (Sky 400)
+    "text_main": "#1E293B",          # Slate 800
+    "text_light": "#94A3B8",         # Slate 400
+    "border_color": "#E2E8F0"        # Slate 200
 }
 
-st.set_page_config(page_title="Job Tracker", layout="wide", page_icon="📓")
+st.set_page_config(page_title="Career Flow", layout="wide", page_icon="⚓")
 
-def inject_custom_css():
+def inject_tech_css():
     st.markdown(f"""
         <style>
-        /* 强制使用 Sitka 字体，营造书卷气 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+        
         .stApp {{
             background-color: {THEME['bg_color']};
-            font-family: 'Sitka', 'Georgia', 'Times New Roman', serif !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: {THEME['text_main']};
         }}
 
@@ -146,123 +207,102 @@ def inject_custom_css():
         div[data-testid="stDecoration"] {{ visibility: hidden; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 磨砂玻璃卡片 (Glassmorphism) --- */
+        /* 极简卡片 */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
-            background-color: {THEME['card_bg_glass']};
-            backdrop-filter: blur(24px); /* 强模糊 */
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid {THEME['glass_border']} !important;
-            border-radius: 6px; /* 更方正的小圆角，偏商务/学术 */
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            background-color: {THEME['card_bg']};
+            border: 1px solid {THEME['border_color']} !important;
+            border-radius: 8px; 
+            padding: 24px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             margin-bottom: 24px;
         }}
 
-        /* --- 侧边栏 (No Blue) --- */
+        /* 侧边栏 */
         section[data-testid="stSidebar"] {{
             background-color: {THEME['sidebar_bg']};
-            border-right: 1px solid rgba(0,0,0,0.05);
+            border-right: 1px solid {THEME['border_color']};
         }}
         
-        /* --- 按钮样式 --- */
-        
-        /* 1. 主操作按钮 (Save/Login) - 使用深海科技蓝 */
-        button[kind="primary"] {{
-            background-color: {THEME['highlight']} !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 4px;
-            padding: 0.5rem 1.5rem;
-            font-family: 'Sitka', serif;
-            font-weight: 600;
+        /* 按钮 - 扁平化高科技风 */
+        .stButton>button {{
+            background-color: {THEME['primary']};
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
             letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(15, 40, 80, 0.2);
         }}
-        button[kind="primary"]:hover {{
-            background-color: #0A1A35 !important; /* 更深的蓝黑 */
+        .stButton>button:hover {{
+            background-color: {THEME['accent']};
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
             transform: translateY(-1px);
         }}
         
-        /* 2. 侧边栏按钮 - 强制去除蓝色，使用深灰/黑 */
-        section[data-testid="stSidebar"] button[kind="primary"] {{
-            background-color: #333333 !important; /* 深炭灰 */
-            color: white !important;
-            border: none !important;
-            box-shadow: none !important;
-        }}
-        section[data-testid="stSidebar"] button[kind="primary"]:hover {{
-            background-color: #000000 !important;
-        }}
-        
-        /* 3. 次要按钮 (Archive/Delete) - 灰线框 */
+        /* 次要按钮 */
         button[kind="secondary"] {{
             background-color: transparent !important;
-            border: 1px solid #A0A0A0 !important;
+            border: 1px solid {THEME['border_color']} !important;
             color: {THEME['text_main']} !important;
-            border-radius: 4px;
-            font-family: 'Sitka', serif;
         }}
         button[kind="secondary"]:hover {{
-            border-color: {THEME['primary']} !important;
-            color: {THEME['primary']} !important;
-            background-color: rgba(255,255,255,0.5) !important;
+            border-color: {THEME['text_main']} !important;
+            background-color: {THEME['bg_color']} !important;
         }}
 
-        /* 语言切换按钮调整 */
+        /* 语言切换按钮 */
         div[data-testid="stHorizontalBlock"] button {{
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+        }}
+
+        /* 表单输入框 */
+        input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
+            background-color: #FFFFFF;
+            border: 1px solid {THEME['border_color']} !important;
+            border-radius: 6px !important;
+            color: {THEME['text_main']};
             font-size: 0.9rem;
         }}
-
-        /* --- 输入框 (沉浸式) --- */
-        input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
-            background-color: rgba(255,255,255,0.6) !important;
-            backdrop-filter: blur(10px);
-            border: 1px solid #D1D1D1 !important;
-            border-radius: 4px !important;
-            color: {THEME['text_main']};
-            font-family: 'Sitka', serif !important;
-        }}
-        input:focus, textarea:focus, div[data-baseweb="select"] > div:focus-within {{
-            border-color: {THEME['highlight']} !important; /* 聚焦时才显示一点点科技蓝 */
-            background-color: #FFF !important;
+        input:focus, textarea:focus {{
+            border-color: {THEME['primary']} !important;
+            box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.1) !important;
         }}
 
-        /* --- 表格 (Clean) --- */
+        /* 表格 */
         div[data-testid="stDataFrame"] {{ border: none !important; }}
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
-            background-color: rgba(0,0,0,0.02) !important;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background-color: #F1F5F9 !important;
+            border-top: 1px solid {THEME['border_color']};
+            border-bottom: 1px solid {THEME['border_color']};
             color: {THEME['text_main']};
-            font-family: 'Sitka', serif;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }}
         div[class*="stDataFrame"] div[class*="DataCell"] {{
-             border-bottom: 1px solid rgba(0,0,0,0.05);
-             color: {THEME['text_main']};
-             font-family: 'Sitka', serif;
+             border-bottom: 1px solid {THEME['border_color']};
+             font-size: 0.9rem;
+             color: #475569;
         }}
 
-        /* --- 字体排版 --- */
         h1, h2, h3 {{ 
-            color: {THEME['accent']} !important; 
-            font-family: 'Sitka', serif !important;
-            font-weight: 700 !important; 
+            color: {THEME['text_main']} !important; 
+            font-weight: 600 !important; 
+            letter-spacing: -0.025em; 
         }}
-        p, label, span, div {{
+        p, label {{
             color: {THEME['text_main']};
-            font-family: 'Sitka', serif !important;
+            font-weight: 400;
         }}
-        .caption {{ color: {THEME['text_light']} !important; font-style: italic; }}
-        
         </style>
     """, unsafe_allow_html=True)
 
-inject_custom_css()
+inject_tech_css()
 
 # ==========================================
 # 2. 核心逻辑
@@ -305,27 +345,28 @@ def get_current_user():
 user = get_current_user()
 
 # ==========================================
-# 3. 登录页
+# 3. 登录页 (完全汉化)
 # ==========================================
 def auth_ui():
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
         with st.container(border=True):
+            # 极简 Logo 区
             st.markdown(f"""
-            <div style="text-align: center; margin-bottom: 40px;">
-                <h2 style="color: {THEME['accent']}; font-size: 2.5rem; margin: 0; font-weight: normal;">{t('app_name')}</h2>
-                <div style="height: 1px; width: 40px; background: {THEME['text_main']}; margin: 20px auto;"></div>
-                <p style="color: {THEME['text_light']}; font-size: 1rem; font-style: italic;">{t('slogan')}</p>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-family: 'JetBrains Mono', monospace; color: {THEME['highlight']}; font-size: 0.9rem; letter-spacing: 2px;">SYSTEM_V2.0</div>
+                <h2 style="color: {THEME['accent']}; font-size: 1.8rem; margin-top: 10px; letter-spacing: -1px;">{t('app_name')}</h2>
+                <div style="width: 40px; height: 2px; background: {THEME['border_color']}; margin: 15px auto;"></div>
+                <p style="color: {THEME['text_light']}; font-size: 0.9rem;">{t('slogan')}</p>
             </div>
             """, unsafe_allow_html=True)
             
             # 语言切换
             c1, c2 = st.columns(2)
             with c1:
-                # 只有当选中时才使用 primary (黑色)，否则 secondary (灰色)
                 t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
-                if st.button("🇨🇳 中文", key="auth_zh", use_container_width=True, type=t_zh):
+                if st.button("🇨🇳 CN", key="auth_zh", use_container_width=True, type=t_zh):
                     st.session_state.language = "ZH"; st.rerun()
             with c2:
                 t_en = "primary" if st.session_state.language == "EN" else "secondary"
@@ -339,7 +380,7 @@ def auth_ui():
                     e = st.text_input(t("lbl_email"), placeholder=t("ph_email"))
                     p = st.text_input(t("lbl_pwd"), type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    if st.form_submit_button(t("btn_connect"), type="primary"):
+                    if st.form_submit_button(t("btn_connect")):
                         try:
                             res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                             if res.user:
@@ -355,7 +396,7 @@ def auth_ui():
                     ne = st.text_input(t("lbl_email"))
                     np = st.text_input(t("lbl_pwd"), type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    if st.form_submit_button(t("btn_create"), type="primary"):
+                    if st.form_submit_button(t("btn_create")):
                         try:
                             supabase.auth.sign_up({"email": ne, "password": np})
                             st.success(t("reg_sent"))
@@ -367,29 +408,29 @@ def auth_ui():
 if not user:
     auth_ui()
 else:
-    # --- 侧边栏 (No Blue) ---
+    # --- 侧边栏 ---
     with st.sidebar:
         c1, c2 = st.columns(2)
         with c1:
             t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
-            if st.button("🇨🇳", key="side_zh", use_container_width=True, type=t_zh):
+            if st.button("🇨🇳 CN", key="side_zh", use_container_width=True, type=t_zh):
                 st.session_state.language = "ZH"; st.rerun()
         with c2:
             t_en = "primary" if st.session_state.language == "EN" else "secondary"
-            if st.button("🇺🇸", key="side_en", use_container_width=True, type=t_en):
+            if st.button("🇺🇸 EN", key="side_en", use_container_width=True, type=t_en):
                 st.session_state.language = "EN"; st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         
         with st.container(border=True):
             st.markdown(f"""
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 40px; height: 40px; background: #333; border-radius: 4px; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Sitka', serif; font-size: 1.2rem;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; background: {THEME['primary']}; border-radius: 4px; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600;">
                     {user.email[0].upper()}
                 </div>
                 <div style="overflow: hidden;">
-                    <div style="font-weight: bold; font-size: 0.9rem; color: {THEME['text_main']}">{t('my_account')}</div>
-                    <div style="font-size: 0.8rem; color: {THEME['text_light']};">{user.email.split('@')[0]}</div>
+                    <div style="font-weight: 600; font-size: 0.85rem; color: {THEME['text_main']}">{t('my_account')}</div>
+                    <div style="font-size: 0.7rem; color: {THEME['text_light']}; font-family: 'JetBrains Mono';">{user.email.split('@')[0]}</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -397,9 +438,8 @@ else:
                 st.caption(f"{t('lbl_uid')}")
                 st.code(user.id, language=None)
 
-        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.8rem; margin: 30px 0 10px 5px; font-weight: bold; text-transform: uppercase;'>{t('console')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.7rem; margin: 30px 0 10px 5px; font-weight: 600; letter-spacing: 1px;'>{t('console')}</div>", unsafe_allow_html=True)
         
-        # 导航 (Primary = Black/Dark Grey via CSS override)
         if st.button(t("nav_dashboard"), key="nav_d", use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'; st.rerun()
             
@@ -430,6 +470,7 @@ else:
         except: return pd.DataFrame()
 
     df = load_my_data(user.id)
+    
     active_df = pd.DataFrame()
     archived_df = pd.DataFrame()
     if not df.empty:
@@ -452,24 +493,23 @@ else:
 
     if st.session_state.page == 'dashboard':
         # --- 📅 看板 ---
+        
         c_head1, c_head2 = st.columns([2, 1])
         with c_head1:
-            st.markdown(f"<h1 style='font-size: 2.5rem; font-weight: normal; margin-bottom: 0;'>{greet}</h1>", unsafe_allow_html=True)
-            st.markdown(f"<h1 style='font-size: 2.5rem; font-weight: bold; margin-top: 0;'>{user.email.split('@')[0]}</h1>", unsafe_allow_html=True)
-            st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 1rem; margin-top: 10px;'>{t('greeting_sub')}</p>", unsafe_allow_html=True)
+            st.markdown(f"<h1 style='font-size: 1.8rem; font-weight: 400;'>{greet} <strong style='font-weight: 600;'>{user.email.split('@')[0]}</strong></h1>", unsafe_allow_html=True)
+            st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.9rem; margin-top: -10px; font-family: sans-serif;'>{t('greeting_sub')}</div>", unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
 
         if active_df.empty:
-             with st.container(border=True):
-                st.markdown(f"""
-                <div style='text-align: center; padding: 60px; color: {THEME['text_light']};'>
-                    <div style='font-size: 2rem; margin-bottom: 15px; opacity: 0.3;'>✒️</div>
-                    <p style="font-size: 1rem;">{t('empty_desc')}</p>
-                </div>
-                """, unsafe_allow_html=True)
+             st.markdown(f"""
+             <div style='text-align: center; padding: 60px; color: {THEME['text_light']}; border: 1px dashed {THEME['border_color']}; border-radius: 8px;'>
+                <div style='font-size: 1.5rem; margin-bottom: 10px;'>📡</div>
+                <p style="font-size: 0.9rem;">{t('empty_desc')}</p>
+             </div>
+             """, unsafe_allow_html=True)
         else:
-            # 灰调指标卡
+            # 科技感指标
             m1, m2, m3, m4 = st.columns(4)
             
             cnt_active = len(active_df[active_df['status'].isin(['applied', 'interviewing'])])
@@ -477,18 +517,18 @@ else:
             cnt_off = len(active_df[active_df['status'] == 'offer'])
             rate = len(active_df[active_df['status'] != 'applied']) / len(active_df) * 100
             
-            def paper_metric(label, value):
+            def tech_metric(label, value):
                 st.markdown(f"""
-                <div style="background-color: {THEME['card_bg_glass']}; padding: 20px; border: 1px solid rgba(0,0,0,0.05); border-radius: 4px;">
-                    <div style="font-size: 0.8rem; color: {THEME['text_light']}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">{label}</div>
-                    <div style="font-size: 2rem; font-weight: bold; color: {THEME['text_main']}; font-family: 'Sitka', serif;">{value}</div>
+                <div style="background-color: white; padding: 20px 24px; border: 1px solid {THEME['border_color']}; border-radius: 8px;">
+                    <div style="font-size: 0.75rem; color: {THEME['text_light']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">{label}</div>
+                    <div style="font-size: 1.8rem; font-weight: 600; color: {THEME['text_main']}; letter-spacing: -0.05em;">{value}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
-            with m1: paper_metric(t("metric_active"), cnt_active)
-            with m2: paper_metric(t("metric_interview"), cnt_int)
-            with m3: paper_metric(t("metric_offer"), cnt_off)
-            with m4: paper_metric(t("metric_rate"), f"{rate:.1f}%")
+            with m1: tech_metric(t("metric_active"), cnt_active)
+            with m2: tech_metric(t("metric_interview"), cnt_int)
+            with m3: tech_metric(t("metric_offer"), cnt_off)
+            with m4: tech_metric(t("metric_rate"), f"{rate:.1f}%")
 
             st.markdown("<br>", unsafe_allow_html=True)
 
@@ -509,7 +549,7 @@ else:
                             "title": st.column_config.TextColumn(t("col_role"), width="medium"),
                         },
                         column_order=("date_str", "company", "title", "s_disp"),
-                        use_container_width=True, hide_index=True, height=260
+                        use_container_width=True, hide_index=True, height=220
                     )
 
             with c_side:
@@ -520,14 +560,13 @@ else:
                     counts = chart_df['s_label'].value_counts().reset_index()
                     counts.columns = ['label', 'count']
                     
-                    # 黑白灰冷色盘 (Monochrome/Slate)
-                    mono_palette = ['#1A1A1A', '#4D4D4D', '#808080', '#B3B3B3', '#E6E6E6'] 
+                    tech_palette = ['#334155', '#94A3B8', '#CBD5E1', '#E2E8F0', '#0EA5E9'] 
                     
-                    fig = px.pie(counts, values='count', names='label', hole=0.8, color_discrete_sequence=mono_palette)
+                    fig = px.pie(counts, values='count', names='label', hole=0.8, color_discrete_sequence=tech_palette)
                     fig.update_layout(
-                        margin=dict(t=10, b=10, l=10, r=10), height=260, showlegend=False,
+                        margin=dict(t=0, b=0, l=0, r=0), height=220, showlegend=False,
                         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                        annotations=[dict(text=f"{len(active_df)}", x=0.5, y=0.5, font_size=28, showarrow=False, font_color=THEME['text_main'], font_family="Sitka")]
+                        annotations=[dict(text=f"{len(active_df)}", x=0.5, y=0.5, font_size=24, showarrow=False, font_color=THEME['text_main'])]
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
@@ -561,9 +600,8 @@ else:
                         
                         new_d = st.text_area(t("input_note"), value=row['description'], height=80)
                         
-                        b1, b2, b3 = st.columns([1.5, 1.5, 4])
-                        # 操作按钮 (使用高科技深蓝)
-                        if b1.form_submit_button(t("btn_save"), type="primary"):
+                        b1, b2, b3 = st.columns([1, 1, 4])
+                        if b1.form_submit_button(t("btn_save")):
                             supabase.table("job_applications").update({
                                 "title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d
                             }).eq("id", row['id']).execute()
@@ -583,15 +621,10 @@ else:
     elif st.session_state.page == 'archive':
         # --- 🗃️ 归档页 ---
         st.markdown(f"## {t('archive_title')}")
-        st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 1rem; font-style: italic;'>{t('archive_sub')}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 0.9rem;'>{t('archive_sub')}</p>", unsafe_allow_html=True)
         
         if archived_df.empty:
-            with st.container(border=True):
-                 st.markdown(f"""
-                 <div style='text-align: center; padding: 40px; color: {THEME['text_light']};'>
-                    <p style="font-size: 1rem;">{t('archive_empty')}</p>
-                 </div>
-                 """, unsafe_allow_html=True)
+            st.info(t("archive_empty"))
         else:
             with st.container(border=True):
                 archived_df['display_status'] = t("s_archived")
@@ -618,7 +651,7 @@ else:
                     row = archived_df.iloc[row_idx]
                     st.caption(f"Selected: {row['title']} @ {row['company']}")
                     
-                    c_res, c_del = st.columns([1.5, 6])
+                    c_res, c_del = st.columns([1, 6])
                     if c_res.button(t("btn_restore"), type="primary"):
                         supabase.table("job_applications").update({"status": "applied"}).eq("id", row['id']).execute()
                         st.cache_data.clear()
