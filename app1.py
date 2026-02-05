@@ -7,7 +7,7 @@ import time
 import datetime
 
 # ==========================================
-# 0. 国际化与文案配置 (I18n) - 保持不变
+# 0. 国际化与文案配置 (I18n)
 # ==========================================
 if 'language' not in st.session_state:
     st.session_state.language = 'ZH'
@@ -19,105 +19,104 @@ def t(key):
 
 TRANSLATIONS = {
     "ZH": {
-        "app_name": "NORDIC FLOW", # 改名契合风格
-        "slogan": "极简数据，清醒掌控",
-        "loading": "System Initializing...",
+        "app_name": "NORDIC / CORE", 
+        "slogan": "理性数据 · 深度掌控",
+        "loading": "System Loading...",
         "tab_login": "登 录", "tab_register": "注 册",
-        "lbl_email": "邮箱地址", "lbl_pwd": "密码", "ph_email": "name@company.com",
-        "btn_connect": "连接系统", "btn_create": "创建 ID",
-        "auth_success": "权限已确认。", "reg_sent": "验证邮件已发送。",
-        "console": "CONTROL PANEL", "my_account": "账户概览",
-        "view_api_key": "API 密钥", "lbl_uid": "User ID:",
-        "nav_dashboard": "核心看板", "nav_archive": "归档数据",
+        "lbl_email": "邮箱地址", "lbl_pwd": "密码", "ph_email": "user@domain.com",
+        "btn_connect": "连接终端", "btn_create": "注册 ID",
+        "auth_success": "Access Granted.", "reg_sent": "Verification Sent.",
+        "console": "CONTROL", "my_account": "PROFILE",
+        "view_api_key": "Access Key", "lbl_uid": "UID:",
+        "nav_dashboard": "核心看板", "nav_archive": "冷存储归档",
         "logout": "断开连接",
-        "greeting_morning": "早安。", "greeting_afternoon": "午安。", "greeting_evening": "晚上好。",
-        "greeting_sub": "保持专注。数据已同步。",
-        "metric_active": "活跃申请数", "metric_interview": "面试进程",
-        "metric_offer": "Offer 已获", "metric_rate": "整体回应率",
+        "greeting_morning": "Good Morning.", "greeting_afternoon": "Good Afternoon.", "greeting_evening": "Good Evening.",
+        "greeting_sub": "系统运行正常。数据已同步。",
+        "metric_active": "活跃申请", "metric_interview": "面试进程",
+        "metric_offer": "Offer", "metric_rate": "回应率",
         "archive_title": "归档数据库", "archive_sub": "已封存的历史数据记录。",
         "archive_empty": "未检索到归档记录。",
         "btn_restore": "激活记录", "restore_success": "记录已恢复至活跃状态。",
-        "restore_ph": "选择要恢复的记录...",
-        "chart_title": "状态分布透视", "list_title": "近期动态追踪",
-        "manage_title": "数据管理终端", "manage_hint": "更新状态或变更数据生命周期。",
-        "search_label": "搜索", "search_ph": "定位活跃记录...",
-        "input_title": "岗位名称", "input_company": "公司主体",
-        "input_status": "当前阶段", "input_loc": "工作地点",
-        "input_note": "备注 / 随笔",
-        "col_date": "添加日期", "col_company": "公司名称",
-        "col_role": "岗位", "col_status": "当前状态",
-        "btn_save": "确认更新", "btn_archive": "封存归档", "btn_del": "永久删除",
+        "restore_ph": "选择记录以恢复...",
+        "chart_title": "状态分布透视", "list_title": "动态追踪",
+        "manage_title": "数据管理", "manage_hint": "更新状态或变更生命周期。",
+        "search_label": "搜索", "search_ph": "定位记录...",
+        "input_title": "岗位", "input_company": "公司",
+        "input_status": "阶段", "input_loc": "地点",
+        "input_note": "备注",
+        "col_date": "日期", "col_company": "公司",
+        "col_role": "岗位", "col_status": "状态",
+        "btn_save": "确认更新", "btn_archive": "移入冷存储", "btn_del": "物理删除",
         "msg_archived": "记录已封存。", "msg_updated": "数据已同步。",
         "msg_deleted": "记录已销毁。",
-        "empty_desc": "暂无活跃数据流。等待输入。",
+        "empty_desc": "无活跃数据流。",
         "s_applied": "已投递", "s_interviewing": "面试中", "s_offer": "Offer",
         "s_rejected": "已拒绝", "s_ghosted": "无回音", "s_archived": "已归档"
     },
     "EN": {
-        "app_name": "NORDIC FLOW",
-        "slogan": "Minimal Data, Lucid Control.",
-        "loading": "System Initializing...",
+        "app_name": "NORDIC / CORE",
+        "slogan": "Rational Data. Deep Control.",
+        "loading": "System Loading...",
         "tab_login": "LOGIN", "tab_register": "REGISTER",
-        "lbl_email": "Email", "lbl_pwd": "Password", "ph_email": "name@company.com",
+        "lbl_email": "Email", "lbl_pwd": "Password", "ph_email": "user@domain.com",
         "btn_connect": "CONNECT", "btn_create": "CREATE ID",
-        "auth_success": "Access Granted.", "reg_sent": "Verification email sent.",
-        "console": "CONTROL PANEL", "my_account": "ACCOUNT",
-        "view_api_key": "API Key", "lbl_uid": "UID:",
-        "nav_dashboard": "Dashboard", "nav_archive": "Archive Data",
+        "auth_success": "Access Granted.", "reg_sent": "Verification Sent.",
+        "console": "CONTROL", "my_account": "PROFILE",
+        "view_api_key": "Access Key", "lbl_uid": "UID:",
+        "nav_dashboard": "Dashboard", "nav_archive": "Cold Storage",
         "logout": "Disconnect",
         "greeting_morning": "Good Morning.", "greeting_afternoon": "Good Afternoon.", "greeting_evening": "Good Evening.",
-        "greeting_sub": "Stay focused. Data synchronized.",
-        "metric_active": "Active Applications", "metric_interview": "Interviews",
-        "metric_offer": "Offers Received", "metric_rate": "Response Rate",
-        "archive_title": "Archive Database", "archive_sub": "Stored historical records.",
-        "archive_empty": "No archived records found.",
-        "btn_restore": "Restore Record", "restore_success": "Record restored to active status.",
-        "restore_ph": "Select record to restore...",
-        "chart_title": "Status Perspective", "list_title": "Recent Activity Track",
-        "manage_title": "Data Management Terminal", "manage_hint": "Update status or change lifecycle.",
-        "search_label": "Search", "search_ph": "Locate active record...",
-        "input_title": "Position", "input_company": "Company",
-        "input_status": "Current Phase", "input_loc": "Location",
-        "input_note": "Notes / Remarks",
-        "col_date": "Date Added", "col_company": "Company Name",
+        "greeting_sub": "System operational. Data synced.",
+        "metric_active": "Active", "metric_interview": "Interviews",
+        "metric_offer": "Offers", "metric_rate": "Response Rate",
+        "archive_title": "Archive DB", "archive_sub": "Stored historical records.",
+        "archive_empty": "No archived records.",
+        "btn_restore": "Restore", "restore_success": "Restored to active.",
+        "restore_ph": "Select to restore...",
+        "chart_title": "Status Perspective", "list_title": "Activity Track",
+        "manage_title": "Data Management", "manage_hint": "Update status or lifecycle.",
+        "search_label": "Search", "search_ph": "Locate record...",
+        "input_title": "Role", "input_company": "Company",
+        "input_status": "Phase", "input_loc": "Location",
+        "input_note": "Notes",
+        "col_date": "Date", "col_company": "Company",
         "col_role": "Role", "col_status": "Status",
-        "btn_save": "Update Confirm", "btn_archive": "Archive", "btn_del": "Delete Permanently",
-        "msg_archived": "Record archived.", "msg_updated": "Data synchronized.",
-        "msg_deleted": "Record destroyed.",
-        "empty_desc": "No active data stream. Waiting for input.",
+        "btn_save": "Update", "btn_archive": "Archive", "btn_del": "Delete",
+        "msg_archived": "Archived.", "msg_updated": "Synced.",
+        "msg_deleted": "Deleted.",
+        "empty_desc": "No active data stream.",
         "s_applied": "Applied", "s_interviewing": "Interview", "s_offer": "Offer",
         "s_rejected": "Rejected", "s_ghosted": "No Response", "s_archived": "Archived"
     }
 }
 
 # ==========================================
-# 1. UI 主题配置: "Nordic Glass & Tech Blue"
+# 1. UI 主题配置: "Nordic Deep & Glass"
 # ==========================================
 THEME = {
-    "bg_color": "#F0F4F8",           # 极冷灰背景 (Cooler Grey)
-    "sidebar_bg_glass": "rgba(248, 250, 252, 0.7)", # 侧边栏毛玻璃
-    "card_bg_glass": "rgba(255, 255, 255, 0.65)",   # 卡片毛玻璃
-    "glass_border": "rgba(226, 232, 240, 0.5)",     # 极细的半透明边框
-    "primary": "#334155",            # 板岩深灰 (Slate 700) - 用于通用元素
-    "accent": "#0F172A",             # Slate 900
-    "highlight": "#0EA5E9",          # 科技蓝 (Sky 500) - 核心高亮色
-    "text_main": "#1E293B",          # Slate 800
-    "text_light": "#64748B",         # Slate 500
+    "bg_color": "#F3F4F6",           # 冷石灰 (Stone 100) - 更有质感
+    "sidebar_bg": "rgba(255, 255, 255, 0.7)", # 侧边栏高透
+    "card_bg_glass": "rgba(255, 255, 255, 0.4)",   # 卡片极透
+    "glass_border": "rgba(255, 255, 255, 0.6)",    # 玻璃边缘反光
+    "primary": "#334155",            # 板岩 (Slate 700)
+    "accent": "#0F172A",             # 黑曜石 (Slate 900)
+    "highlight": "#1D4ED8",          # 深海蓝 (Royal Blue 700) - 深沉的高级蓝
+    "text_main": "#111827",          # 接近纯黑 (Gray 900)
+    "text_light": "#64748B",         # 沉稳灰 (Slate 500)
 }
 
-st.set_page_config(page_title="Nordic Flow", layout="wide", page_icon="🧊")
+st.set_page_config(page_title="Nordic Core", layout="wide", page_icon="🧊")
 
 def inject_nordic_glass_css():
     st.markdown(f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
         
         .stApp {{
             background-color: {THEME['bg_color']};
-            /* 添加一个微妙的冷光渐变背景 */
-            background-image: radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.05) 0px, transparent 50%), 
-                              radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-image: 
+                linear-gradient(120deg, #E2E8F0 0%, #F8FAFC 100%);
+            font-family: 'Inter', sans-serif;
             color: {THEME['text_main']};
         }}
 
@@ -125,110 +124,119 @@ def inject_nordic_glass_css():
         div[data-testid="stDecoration"] {{ visibility: hidden; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 毛玻璃卡片 (Frosted Glass Cards) --- */
+        /* --- 极度通透的毛玻璃卡片 --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg_glass']};
-            backdrop-filter: blur(16px) saturate(120%); /* 毛玻璃核心效果 */
-            -webkit-backdrop-filter: blur(16px) saturate(120%);
-            border: 1px solid {THEME['glass_border']} !important;
-            border-radius: 12px; 
+            backdrop-filter: blur(24px) saturate(140%); /* 强模糊 */
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.8) !important; /* 顶部高光模拟玻璃厚度 */
+            border-radius: 16px; 
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); /* 极柔和的阴影 */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); /* 极淡的投影 */
             margin-bottom: 24px;
         }}
 
-        /* --- 侧边栏 (Sidebar Glass) --- */
+        /* --- 侧边栏 --- */
         section[data-testid="stSidebar"] {{
-            background-color: {THEME['sidebar_bg_glass']};
-            backdrop-filter: blur(20px) saturate(120%);
-            border-right: 1px solid {THEME['glass_border']};
+            background-color: {THEME['sidebar_bg']};
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
         }}
         
-        /* --- 按钮 (Tech Style) --- */
-        /* 主按钮 (Primary) - 使用科技蓝 */
+        /* --- 按钮: 克制、深沉 --- */
+        /* 主按钮 */
         button[kind="primary"] {{
             background-color: {THEME['highlight']} !important;
             color: white !important;
             border: none !important;
             border-radius: 8px;
             padding: 0.5rem 1.2rem;
-            font-weight: 600;
+            font-weight: 500;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25); /* 深蓝阴影 */
             transition: all 0.2s ease;
-            box-shadow: 0 2px 10px rgba(14, 165, 233, 0.2);
         }}
         button[kind="primary"]:hover {{
-            background-color: #0284C7 !important; /* Sky 600 */
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            background-color: #1E40AF !important; /* 更深的蓝 */
             transform: translateY(-1px);
         }}
         
-        /* 次要按钮 (Secondary) - 透明背景，悬停泛蓝光 */
+        /* 次要按钮: 极简灰线 */
         button[kind="secondary"] {{
             background-color: transparent !important;
-            border: 1px solid {THEME['glass_border']} !important;
+            border: 1px solid {THEME['text_light']} !important;
             color: {THEME['text_main']} !important;
             border-radius: 8px;
             font-weight: 500;
+            opacity: 0.8;
         }}
         button[kind="secondary"]:hover {{
             border-color: {THEME['highlight']} !important;
-            background-color: rgba(14, 165, 233, 0.05) !important;
             color: {THEME['highlight']} !important;
+            background-color: white !important;
+            opacity: 1;
         }}
 
-        /* 语言切换按钮小调整 */
+        /* 语言切换按钮 */
         div[data-testid="stHorizontalBlock"] button {{
             border-radius: 6px;
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
         }}
 
-        /* --- 输入框 (Clean Glass Inputs) --- */
+        /* --- 输入框: 沉浸式 --- */
         input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
-            background-color: rgba(255, 255, 255, 0.6) !important; /* 半透明输入框 */
-            backdrop-filter: blur(5px);
-            border: 1px solid {THEME['glass_border']} !important;
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(203, 213, 225, 0.6) !important; /* Slate 300 */
             border-radius: 8px !important;
             color: {THEME['text_main']};
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-family: 'Inter', sans-serif;
         }}
-        /* 聚焦时高亮边框 */
-        input:focus, textarea:focus, div[data-baseweb="select"] > div:focus-within {{
+        input:focus, textarea:focus {{
             border-color: {THEME['highlight']} !important;
-            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15) !important;
-            background-color: rgba(255, 255, 255, 0.8) !important;
+            background-color: rgba(255, 255, 255, 0.9) !important;
         }}
 
-        /* --- 表格 (Minimal Grid) --- */
+        /* --- 表格: 极简黑灰 --- */
         div[data-testid="stDataFrame"] {{ border: none !important; }}
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
-            background-color: rgba(241, 245, 249, 0.5) !important; /* 半透明表头 */
-            border-bottom: 1px solid {THEME['glass_border']};
+            background-color: rgba(248, 250, 252, 0.5) !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             color: {THEME['text_light']};
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 1px;
             font-weight: 600;
         }}
         div[class*="stDataFrame"] div[class*="DataCell"] {{
-             border-bottom: 1px solid {THEME['glass_border']};
+             border-bottom: 1px solid rgba(0,0,0,0.03);
              color: {THEME['text_main']};
+             font-size: 0.9rem;
         }}
 
-        /* --- 文字 --- */
+        /* --- 文字排版 --- */
         h1, h2, h3 {{ 
-            color: {THEME['text_main']} !important; 
+            color: {THEME['accent']} !important; 
             font-weight: 700 !important; 
-            letter-spacing: -0.03em; 
+            letter-spacing: -0.04em; 
         }}
         p, label, span {{
-            color: {THEME['text_main']};
-            font-weight: 400;
+            color: {THEME['primary']};
             letter-spacing: -0.01em;
         }}
-        .caption {{ color: {THEME['text_light']} !important; }}
+        .caption {{ color: {THEME['text_light']} !important; font-size: 0.8rem; }}
+        
+        /* 状态指示点 */
+        .status-dot {{
+            height: 6px; width: 6px;
+            background-color: {THEME['highlight']};
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 8px {THEME['highlight']};
+        }}
         </style>
     """, unsafe_allow_html=True)
 
@@ -283,14 +291,15 @@ def auth_ui():
     with col:
         with st.container(border=True):
             st.markdown(f"""
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div style="font-family: 'JetBrains Mono', monospace; color: {THEME['highlight']}; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px;">SYS.V3 // GLASS</div>
-                <h2 style="color: {THEME['accent']}; font-size: 2rem; margin: 0; letter-spacing: -1px;">{t('app_name')}</h2>
-                <p style="color: {THEME['text_light']}; font-size: 0.9rem; margin-top: 10px;">{t('slogan')}</p>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="font-family: 'JetBrains Mono', monospace; color: {THEME['text_light']}; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 5px;">EST. 2024</div>
+                <h2 style="color: {THEME['accent']}; font-size: 2.2rem; margin: 0; letter-spacing: -2px;">{t('app_name')}</h2>
+                <div style="height: 1px; width: 60px; background: {THEME['text_light']}; margin: 15px auto; opacity: 0.3;"></div>
+                <p style="color: {THEME['text_light']}; font-size: 0.9rem;">{t('slogan')}</p>
             </div>
             """, unsafe_allow_html=True)
             
-            # 语言切换 - 使用 primary/secondary 样式，会被 CSS 自动映射为高亮/透明
+            # 语言切换
             c1, c2 = st.columns(2)
             with c1:
                 t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
@@ -308,7 +317,6 @@ def auth_ui():
                     e = st.text_input(t("lbl_email"), placeholder=t("ph_email"))
                     p = st.text_input(t("lbl_pwd"), type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    # 登录按钮使用 primary，将应用蓝色高亮
                     if st.form_submit_button(t("btn_connect"), type="primary"):
                         try:
                             res = supabase.auth.sign_in_with_password({"email": e, "password": p})
@@ -342,24 +350,25 @@ else:
         c1, c2 = st.columns(2)
         with c1:
             t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
-            if st.button("🇨🇳 CN", key="side_zh", use_container_width=True, type=t_zh):
+            if st.button("🇨🇳", key="side_zh", use_container_width=True, type=t_zh):
                 st.session_state.language = "ZH"; st.rerun()
         with c2:
             t_en = "primary" if st.session_state.language == "EN" else "secondary"
-            if st.button("🇺🇸 EN", key="side_en", use_container_width=True, type=t_en):
+            if st.button("🇺🇸", key="side_en", use_container_width=True, type=t_en):
                 st.session_state.language = "EN"; st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         
+        # 用户信息 (Black & White style)
         with st.container(border=True):
             st.markdown(f"""
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, {THEME['primary']} 0%, {THEME['highlight']} 100%); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; box-shadow: 0 2px 5px rgba(14, 165, 233, 0.3);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: {THEME['accent']}; border-radius: 6px; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700;">
                     {user.email[0].upper()}
                 </div>
                 <div style="overflow: hidden;">
                     <div style="font-weight: 700; font-size: 0.9rem; color: {THEME['text_main']}">{t('my_account')}</div>
-                    <div style="font-size: 0.75rem; color: {THEME['text_light']}; font-family: 'JetBrains Mono';">{user.email.split('@')[0]}</div>
+                    <div style="font-size: 0.7rem; color: {THEME['text_light']}; font-family: 'JetBrains Mono';">{user.email.split('@')[0]}</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -367,9 +376,9 @@ else:
                 st.caption(f"{t('lbl_uid')}")
                 st.code(user.id, language=None)
 
-        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.75rem; margin: 30px 0 10px 5px; font-weight: 700; letter-spacing: 1px;'>{t('console')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.7rem; margin: 30px 0 10px 5px; font-weight: 700; letter-spacing: 1px;'>{t('console')}</div>", unsafe_allow_html=True)
         
-        # 导航按钮 - 激活状态会使用 primary 样式（即蓝色高亮）
+        # 导航 (Primary = Active, Blue Highlight)
         if st.button(t("nav_dashboard"), key="nav_d", use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'; st.rerun()
             
@@ -400,7 +409,6 @@ else:
         except: return pd.DataFrame()
 
     df = load_my_data(user.id)
-    
     active_df = pd.DataFrame()
     archived_df = pd.DataFrame()
     if not df.empty:
@@ -422,13 +430,12 @@ else:
     else: greet = t("greeting_evening")
 
     if st.session_state.page == 'dashboard':
-        # --- 📅 看板 ---
+        # --- 📅 核心看板 ---
         
         c_head1, c_head2 = st.columns([2, 1])
         with c_head1:
-            # 使用高亮色点缀问候语
-            st.markdown(f"<h1 style='font-size: 2rem; font-weight: 400;'>{greet} <span style='color:{THEME['highlight']}; font-weight: 700;'>{user.email.split('@')[0]}</span></h1>", unsafe_allow_html=True)
-            st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.9rem; margin-top: -5px;'>{t('greeting_sub')}</div>", unsafe_allow_html=True)
+            st.markdown(f"<h1 style='font-size: 2.2rem; font-weight: 300;'>{greet} <strong style='font-weight: 700; color:{THEME['accent']}'>{user.email.split('@')[0]}</strong></h1>", unsafe_allow_html=True)
+            st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.9rem; font-family: sans-serif; opacity: 0.8;'>{t('greeting_sub')}</div>", unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -436,12 +443,12 @@ else:
              with st.container(border=True):
                 st.markdown(f"""
                 <div style='text-align: center; padding: 40px; color: {THEME['text_light']};'>
-                    <div style='font-size: 2rem; margin-bottom: 15px; color: {THEME['highlight']}; opacity: 0.5;'>⟲</div>
+                    <div style='font-size: 2rem; margin-bottom: 10px; opacity: 0.3;'>◌</div>
                     <p style="font-size: 0.9rem;">{t('empty_desc')}</p>
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            # 科技感毛玻璃指标卡，数值使用高亮色
+            # 高通透指标卡 (High Transparency Metrics)
             m1, m2, m3, m4 = st.columns(4)
             
             cnt_active = len(active_df[active_df['status'].isin(['applied', 'interviewing'])])
@@ -449,21 +456,18 @@ else:
             cnt_off = len(active_df[active_df['status'] == 'offer'])
             rate = len(active_df[active_df['status'] != 'applied']) / len(active_df) * 100
             
-            def glass_metric(label, value, icon):
+            def glass_metric(label, value):
                 st.markdown(f"""
-                <div style="background-color: {THEME['card_bg_glass']}; backdrop-filter: blur(16px); padding: 20px 24px; border: 1px solid {THEME['glass_border']}; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div style="font-size: 0.75rem; color: {THEME['text_light']}; text-transform: uppercase; letter-spacing: 0.05em;">{label}</div>
-                        <div style="color: {THEME['highlight']}; opacity: 0.8;">{icon}</div>
-                    </div>
-                    <div style="font-size: 2rem; font-weight: 700; color: {THEME['highlight']}; letter-spacing: -0.05em; text-shadow: 0 2px 10px rgba(14, 165, 233, 0.2);">{value}</div>
+                <div style="background-color: {THEME['card_bg_glass']}; backdrop-filter: blur(16px); padding: 24px; border: 1px solid {THEME['glass_border']}; border-radius: 12px;">
+                    <div style="font-size: 0.7rem; color: {THEME['text_light']}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">{label}</div>
+                    <div style="font-size: 2.2rem; font-weight: 700; color: {THEME['highlight']}; letter-spacing: -1px; text-shadow: 0 0 20px rgba(29, 78, 216, 0.2);">{value}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
-            with m1: glass_metric(t("metric_active"), cnt_active, "⚡")
-            with m2: glass_metric(t("metric_interview"), cnt_int, "📅")
-            with m3: glass_metric(t("metric_offer"), cnt_off, "🎉")
-            with m4: glass_metric(t("metric_rate"), f"{rate:.1f}%", "📈")
+            with m1: glass_metric(t("metric_active"), cnt_active)
+            with m2: glass_metric(t("metric_interview"), cnt_int)
+            with m3: glass_metric(t("metric_offer"), cnt_off)
+            with m4: glass_metric(t("metric_rate"), f"{rate:.1f}%")
 
             st.markdown("<br>", unsafe_allow_html=True)
 
@@ -484,7 +488,7 @@ else:
                             "title": st.column_config.TextColumn(t("col_role"), width="medium"),
                         },
                         column_order=("date_str", "company", "title", "s_disp"),
-                        use_container_width=True, hide_index=True, height=240
+                        use_container_width=True, hide_index=True, height=260
                     )
 
             with c_side:
@@ -495,14 +499,14 @@ else:
                     counts = chart_df['s_label'].value_counts().reset_index()
                     counts.columns = ['label', 'count']
                     
-                    # 科技蓝冷色调配色，第一个颜色使用高亮色
-                    tech_palette = [THEME['highlight'], '#64748B', '#94A3B8', '#CBD5E1', '#E2E8F0'] 
+                    # 极简冷色盘 (Nordic Palette) - 减少蓝色占比，加入灰/黑
+                    nordic_palette = ['#1E293B', '#334155', '#475569', '#94A3B8', '#1D4ED8'] 
                     
-                    fig = px.pie(counts, values='count', names='label', hole=0.75, color_discrete_sequence=tech_palette)
+                    fig = px.pie(counts, values='count', names='label', hole=0.8, color_discrete_sequence=nordic_palette)
                     fig.update_layout(
-                        margin=dict(t=10, b=10, l=10, r=10), height=240, showlegend=False,
+                        margin=dict(t=10, b=10, l=10, r=10), height=260, showlegend=False,
                         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                        annotations=[dict(text=f"{len(active_df)}", x=0.5, y=0.5, font_size=24, showarrow=False, font_color=THEME['text_main'], font_weight=700)]
+                        annotations=[dict(text=f"{len(active_df)}", x=0.5, y=0.5, font_size=28, showarrow=False, font_color=THEME['primary'], font_weight=700)]
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
@@ -537,7 +541,7 @@ else:
                         new_d = st.text_area(t("input_note"), value=row['description'], height=80)
                         
                         b1, b2, b3 = st.columns([1.5, 1.5, 4])
-                        # 保存按钮使用高亮色
+                        # 主操作用蓝
                         if b1.form_submit_button(t("btn_save"), type="primary"):
                             supabase.table("job_applications").update({
                                 "title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d
@@ -545,6 +549,7 @@ else:
                             st.cache_data.clear()
                             st.success(t("msg_updated")); time.sleep(0.5); st.rerun()
                         
+                        # 归档用灰线
                         if b2.form_submit_button(t("btn_archive"), type="secondary"):
                             supabase.table("job_applications").update({"status": "archived"}).eq("id", row['id']).execute()
                             st.cache_data.clear()
@@ -556,15 +561,15 @@ else:
                         st.warning(t("msg_deleted")); time.sleep(0.5); st.rerun()
 
     elif st.session_state.page == 'archive':
-        # --- 🗃️ 归档页 ---
+        # --- 🗃️ 归档数据库 ---
         st.markdown(f"## {t('archive_title')}")
-        st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 0.9rem;'>{t('archive_sub')}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 0.9rem; font-family: sans-serif;'>{t('archive_sub')}</p>", unsafe_allow_html=True)
         
         if archived_df.empty:
             with st.container(border=True):
                  st.markdown(f"""
                  <div style='text-align: center; padding: 40px; color: {THEME['text_light']};'>
-                    <div style='font-size: 2rem; margin-bottom: 15px; opacity: 0.5;'>🗃️</div>
+                    <div style='font-size: 2rem; margin-bottom: 15px; opacity: 0.3;'>🗃️</div>
                     <p style="font-size: 0.9rem;">{t('archive_empty')}</p>
                  </div>
                  """, unsafe_allow_html=True)
@@ -595,7 +600,6 @@ else:
                     st.caption(f"Selected: {row['title']} @ {row['company']}")
                     
                     c_res, c_del = st.columns([1.5, 6])
-                    # 恢复按钮使用高亮色
                     if c_res.button(t("btn_restore"), type="primary"):
                         supabase.table("job_applications").update({"status": "applied"}).eq("id", row['id']).execute()
                         st.cache_data.clear()
