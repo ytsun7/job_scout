@@ -91,29 +91,18 @@ TRANSLATIONS = {
 }
 
 # ==========================================
-# 1. UI 主题配置: Nordic Mineral & Linen
+# 1. UI 主题配置: Nordic Mineral
 # ==========================================
 THEME = {
-    # 背景：温暖的亚麻/石灰岩色
-    "bg_color": "#F4F3F0",           
-    
-    # 侧边栏：稍深一点的石灰
-    "sidebar_bg": "#EBEAE6",         
-    
-    # 卡片：高通透的白，带一点暖调
+    "bg_color": "#F4F3F0",           # 亚麻灰
+    "sidebar_bg": "#EBEAE6",         # 侧边栏
     "card_bg_glass": "rgba(255, 255, 255, 0.65)", 
-    
-    # 边框：极细的深岩色
     "glass_border": "rgba(74, 93, 88, 0.1)",       
-    
-    # 核心高亮色：深海藻绿 / 矿物青 (Deep Mineral Green)
-    "highlight": "#4A5D58",          
-    
-    # 辅助色/文字色
-    "primary": "#2C3333",            # 深炭黑 (Charcoal) - 主文字
-    "accent": "#1A1C1C",             # 近乎黑 - 标题
+    "highlight": "#4A5D58",          # 矿物青
+    "primary": "#2C3333",            # 深炭黑
+    "accent": "#1A1C1C",             # 标题黑
     "text_main": "#2C3333",          
-    "text_light": "#7D8582",         # 矿物灰
+    "text_light": "#7D8582",         
 }
 
 st.set_page_config(page_title="Job Tracker", layout="wide", page_icon="📓")
@@ -121,10 +110,9 @@ st.set_page_config(page_title="Job Tracker", layout="wide", page_icon="📓")
 def inject_custom_css():
     st.markdown(f"""
         <style>
-        /* Sitka 字体 + 衬线体 */
+        /* 全局字体：Sitka / 衬线体 */
         .stApp {{
             background-color: {THEME['bg_color']};
-            /* 添加极其细腻的噪点纹理，增加纸张感 */
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
             font-family: 'Sitka', 'Georgia', 'Times New Roman', serif !important;
             color: {THEME['text_main']};
@@ -134,7 +122,30 @@ def inject_custom_css():
         div[data-testid="stDecoration"] {{ visibility: hidden; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
-        /* --- 磨砂玻璃卡片 (Mineral Glass) --- */
+        /* --- 修复箭头显示的关键 CSS --- */
+        /* 1. 侧边栏左上角开关箭头 */
+        button[kind="header"] {{
+            color: {THEME['text_main']} !important;
+        }}
+        [data-testid="stSidebarCollapsedControl"] svg, 
+        [data-testid="stSidebarExpandedControl"] svg {{
+            fill: {THEME['text_main']} !important;
+            color: {THEME['text_main']} !important;
+        }}
+        
+        /* 2. 下拉菜单 (Selectbox) 右侧小箭头 */
+        div[data-baseweb="select"] svg {{
+            fill: {THEME['text_main']} !important;
+            color: {THEME['text_main']} !important;
+        }}
+        
+        /* 3. 折叠面板 (Expander) 箭头 */
+        div[data-testid="stExpander"] svg {{
+            fill: {THEME['text_main']} !important;
+            color: {THEME['text_main']} !important;
+        }}
+
+        /* --- 磨砂玻璃卡片 --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg_glass']};
             backdrop-filter: blur(20px);
@@ -142,7 +153,6 @@ def inject_custom_css():
             border: 1px solid {THEME['glass_border']} !important;
             border-radius: 6px; 
             padding: 30px;
-            /* 阴影改为更自然的漫射光 */
             box-shadow: 0 10px 30px rgba(44, 51, 51, 0.04);
             margin-bottom: 24px;
         }}
@@ -154,11 +164,9 @@ def inject_custom_css():
         }}
         
         /* --- 按钮样式 --- */
-        
-        /* 主按钮：矿物青 */
         button[kind="primary"] {{
             background-color: {THEME['highlight']} !important;
-            color: #F4F3F0 !important; /* 字体色与背景呼应 */
+            color: #F4F3F0 !important;
             border: none !important;
             border-radius: 4px;
             padding: 0.5rem 1.5rem;
@@ -169,12 +177,11 @@ def inject_custom_css():
             box-shadow: 0 4px 10px rgba(74, 93, 88, 0.2);
         }}
         button[kind="primary"]:hover {{
-            background-color: #374642 !important; /* 更深的矿物色 */
+            background-color: #374642 !important;
             transform: translateY(-1px);
             box-shadow: 0 6px 15px rgba(74, 93, 88, 0.3);
         }}
         
-        /* 次要按钮：细线框 */
         button[kind="secondary"] {{
             background-color: transparent !important;
             border: 1px solid {THEME['text_light']} !important;
@@ -188,13 +195,12 @@ def inject_custom_css():
             background-color: rgba(255,255,255,0.5) !important;
         }}
 
-        /* 语言切换按钮 */
         div[data-testid="stHorizontalBlock"] button {{
             border-radius: 4px;
             font-size: 0.9rem;
         }}
 
-        /* --- 输入框 (纸张感) --- */
+        /* --- 输入框 --- */
         input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
             background-color: rgba(255,255,255,0.5) !important;
             backdrop-filter: blur(10px);
@@ -209,7 +215,7 @@ def inject_custom_css():
             box-shadow: 0 0 0 1px rgba(74, 93, 88, 0.1) !important;
         }}
 
-        /* --- 表格 (Clean & Minimal) --- */
+        /* --- 表格 --- */
         div[data-testid="stDataFrame"] {{ border: none !important; }}
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
             background-color: rgba(74, 93, 88, 0.03) !important;
@@ -227,7 +233,7 @@ def inject_custom_css():
              font-family: 'Sitka', serif;
         }}
 
-        /* --- 字体排版 --- */
+        /* --- 字体 --- */
         h1, h2, h3 {{ 
             color: {THEME['accent']} !important; 
             font-family: 'Sitka', serif !important;
@@ -300,7 +306,6 @@ def auth_ui():
             </div>
             """, unsafe_allow_html=True)
             
-            # 语言切换
             c1, c2 = st.columns(2)
             with c1:
                 t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
@@ -378,7 +383,6 @@ else:
 
         st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.8rem; margin: 30px 0 10px 5px; font-weight: bold; text-transform: uppercase;'>{t('console')}</div>", unsafe_allow_html=True)
         
-        # 导航 (Primary = Dark Mineral Green via CSS override)
         if st.button(t("nav_dashboard"), key="nav_d", use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'; st.rerun()
             
