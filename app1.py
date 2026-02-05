@@ -62,8 +62,14 @@ TRANSLATIONS = {
         "input_loc": "地点",
         "input_note": "备忘录",
         
+        # --- 修改点：列名更新 ---
+        "col_date": "添加日期",
+        "col_company": "公司名称",
+        "col_role": "岗位",
+        "col_status": "当前状态",
+        
         "btn_save": "保存更新",
-        "btn_archive": "📂 移入归档", # 新按钮
+        "btn_archive": "📂 移入归档",
         "btn_del": "彻底删除",
         
         "msg_archived": "已移入归档室",
@@ -117,6 +123,12 @@ TRANSLATIONS = {
         "input_loc": "Location",
         "input_note": "Notes",
         
+        # --- Modification: Column Names Updated ---
+        "col_date": "Date Added",
+        "col_company": "Company Name",
+        "col_role": "Role",
+        "col_status": "Status",
+        
         "btn_save": "Save Changes",
         "btn_archive": "📂 Archive",
         "btn_del": "Delete Permanently",
@@ -146,7 +158,7 @@ THEME = {
     "primary_light": "#E8F1F2",      
     "text_main": "#4A5568",          
     "text_light": "#A0AEC0",
-    "archived_tag": "#E2E8F0"        # 归档标签色
+    "archived_tag": "#E2E8F0"
 }
 
 st.set_page_config(page_title="Job Tracker", layout="wide", page_icon="🌿")
@@ -195,7 +207,7 @@ def inject_zen_css():
             box-shadow: 0 6px 15px rgba(122, 158, 159, 0.3);
         }}
         
-        /* 次要按钮 (如归档) */
+        /* 次要按钮 (如归档/删除) */
         button[kind="secondary"] {{
             background-color: transparent !important;
             border: 1px solid #CBD5E0 !important;
@@ -272,11 +284,21 @@ def auth_ui():
             st.markdown(f"<h2 style='text-align: center; color: {THEME['primary']}; margin-bottom: 5px;'>{t('app_name')}</h2>", unsafe_allow_html=True)
             st.markdown(f"<p style='text-align: center; color: #999; font-size: 0.9rem; margin-bottom: 30px;'>{t('slogan')}</p>", unsafe_allow_html=True)
             
-            lang_idx = 0 if st.session_state.language == 'ZH' else 1
-            lang = st.radio("Language", ["中文", "English"], index=lang_idx, horizontal=True, label_visibility="collapsed", key="auth_lang")
-            if (lang == "中文" and st.session_state.language != "ZH") or (lang == "English" and st.session_state.language != "EN"):
-                st.session_state.language = "ZH" if lang == "中文" else "EN"
-                st.rerun()
+            # --- 修改点 (1)：登录页面的国旗切换 ---
+            # 使用两列按钮，选中的语言用 primary 样式，未选中的用 secondary
+            lang_col1, lang_col2 = st.columns(2)
+            with lang_col1:
+                # 只有当当前语言是ZH时，样式为primary，否则为secondary
+                zh_type = "primary" if st.session_state.language == "ZH" else "secondary"
+                if st.button("🇨🇳 中文", key="auth_lang_zh", use_container_width=True, type=zh_type):
+                    st.session_state.language = "ZH"
+                    st.rerun()
+            with lang_col2:
+                en_type = "primary" if st.session_state.language == "EN" else "secondary"
+                if st.button("🇺🇸 English", key="auth_lang_en", use_container_width=True, type=en_type):
+                    st.session_state.language = "EN"
+                    st.rerun()
+            st.markdown("<br>", unsafe_allow_html=True)
 
             tab1, tab2 = st.tabs(["登录", "注册"])
             with tab1:
@@ -314,12 +336,18 @@ if not user:
 else:
     # --- 侧边栏 ---
     with st.sidebar:
-        c1, c2 = st.columns([2, 1])
+        # --- 修改点 (1)：侧边栏的国旗切换 ---
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            zh_type = "primary" if st.session_state.language == "ZH" else "secondary"
+            if st.button("🇨🇳 中文", key="side_lang_zh", use_container_width=True, type=zh_type):
+                st.session_state.language = "ZH"
+                st.rerun()
         with c2:
-            if st.toggle("EN", value=(st.session_state.language=='EN')):
-                if st.session_state.language != 'EN': st.session_state.language = 'EN'; st.rerun()
-            else:
-                if st.session_state.language != 'ZH': st.session_state.language = 'ZH'; st.rerun()
+            en_type = "primary" if st.session_state.language == "EN" else "secondary"
+            if st.button("🇺🇸 EN", key="side_lang_en", use_container_width=True, type=en_type):
+                st.session_state.language = "EN"
+                st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         with st.container(border=True):
@@ -376,7 +404,6 @@ else:
     archived_df = pd.DataFrame()
     
     if not df.empty:
-        # 核心逻辑：状态为 'archived' 的进入历史，其他的在看板
         active_df = df[df['status'] != 'archived']
         archived_df = df[df['status'] == 'archived']
 
@@ -395,7 +422,7 @@ else:
     else: greet = t("greeting_evening")
 
     if st.session_state.page == 'dashboard':
-        # --- 📌 仪表盘 (仅显示活跃数据) ---
+        # --- 📌 仪表盘 ---
         st.markdown(f"## {greet} ✨")
         st.markdown(f"<div style='color:{THEME['text_light']}; margin-top: -15px; margin-bottom: 30px;'>{t('greeting_sub')}</div>", unsafe_allow_html=True)
 
@@ -431,12 +458,10 @@ else:
             with c1:
                 with st.container(border=True):
                     st.markdown(f"### {t('chart_title')}")
-                    # 图表仅使用 active_df
                     chart_df = active_df.copy()
                     chart_df['status_label'] = chart_df['status'].map(lambda x: status_map.get(x, x))
                     counts = chart_df['status_label'].value_counts().reset_index()
                     counts.columns = ['label', 'count']
-                    calm_colors = ['#A8DADC', '#457B9D', '#F1FAEE', '#E63946', '#1D3557']
                     morandi = ['#7c9082', '#9ca8b8', '#d8c4b6', '#e0cdcf', '#aab5a9']
 
                     fig = px.pie(counts, values='count', names='label', hole=0.75, color_discrete_sequence=morandi)
@@ -449,29 +474,29 @@ else:
             with c2:
                 with st.container(border=True):
                     st.markdown(f"### {t('list_title')}")
-                    # 列表仅显示 active_df
+                    # 列表
                     show_df = active_df.head(5).copy()
                     show_df['status_display'] = show_df['status'].map(lambda x: status_map.get(x, x))
                     
+                    # --- 修改点 (2)：表格列名使用更新后的翻译键值 ---
                     st.dataframe(
                         show_df,
                         column_config={
                             "date_str": st.column_config.TextColumn(t("col_date"), width="small"),
-                            "status_display": st.column_config.TextColumn(t("input_status"), width="medium"),
+                            "status_display": st.column_config.TextColumn(t("col_status"), width="medium"),
                             "company": st.column_config.TextColumn(t("col_company"), width="medium"),
-                            "title": st.column_config.TextColumn(t("input_title"), width="large"),
+                            "title": st.column_config.TextColumn(t("col_role"), width="large"),
                         },
                         column_order=("date_str", "company", "title", "status_display"),
                         use_container_width=True, hide_index=True, height=250
                     )
 
-            # --- 岗位管理区 (含归档功能) ---
+            # --- 岗位管理区 ---
             st.markdown("<br>", unsafe_allow_html=True)
             with st.container(border=True):
                 st.markdown(f"### {t('manage_title')}")
                 st.markdown(f"<div style='color:#999; margin-bottom: 20px;'>{t('manage_hint')}</div>", unsafe_allow_html=True)
                 
-                # 仅能搜索活跃岗位
                 job_list = active_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
                 selected_job_str = st.selectbox("Search", [""] + job_list, label_visibility="collapsed", placeholder="Search active jobs...")
                 
@@ -484,7 +509,6 @@ else:
                         c_a, c_b = st.columns(2)
                         with c_a:
                             new_t = st.text_input(t("input_title"), value=row['title'])
-                            # 状态选择不包含 'archived'，因为要通过按钮触发
                             db_keys = ["applied", "interviewing", "offer", "rejected", "ghosted"]
                             curr_k = row['status'] if row['status'] in db_keys else "applied"
                             new_s = st.selectbox(t("input_status"), db_keys, index=db_keys.index(curr_k), format_func=lambda x: status_map.get(x,x))
@@ -494,10 +518,8 @@ else:
                         
                         new_d = st.text_area(t("input_note"), value=row['description'])
                         
-                        # 按钮布局：保存 | 归档 | 删除
                         b1, b2, b3 = st.columns([1.5, 1.5, 4])
                         
-                        # 保存
                         if b1.form_submit_button(t("btn_save")):
                             supabase.table("job_applications").update({
                                 "title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d
@@ -506,14 +528,12 @@ else:
                             st.success(t("msg_updated"))
                             time.sleep(0.5); st.rerun()
                         
-                        # 归档按钮 (Secondary Style)
                         if b2.form_submit_button(t("btn_archive"), type="secondary"):
                             supabase.table("job_applications").update({"status": "archived"}).eq("id", row['id']).execute()
                             st.cache_data.clear()
                             st.success(t("msg_archived"))
                             time.sleep(0.5); st.rerun()
 
-                    # 删除按钮放在外面防止误触
                     if st.button(t("btn_del"), type="secondary", key="del_dash"):
                         supabase.table("job_applications").delete().eq("id", row['id']).execute()
                         st.cache_data.clear()
@@ -521,7 +541,7 @@ else:
                         time.sleep(0.5); st.rerun()
 
     elif st.session_state.page == 'archive':
-        # --- 🗂️ 归档页面 (只显示 archived 数据) ---
+        # --- 🗂️ 归档页面 ---
         st.markdown(f"## {t('archive_title')}")
         st.markdown(f"<div style='color:{THEME['text_light']}; margin-top: -15px; margin-bottom: 30px;'>{t('archive_sub')}</div>", unsafe_allow_html=True)
         
@@ -529,24 +549,23 @@ else:
             st.info(t("archive_empty"))
         else:
             with st.container(border=True):
-                # 简单列表展示归档内容
-                archived_df['display_status'] = t("s_archived") # 统一显示为"已归档"
+                archived_df['display_status'] = t("s_archived")
                 
+                # --- 修改点 (2)：归档表格也应用新的列名 ---
                 st.dataframe(
                     archived_df,
                     column_config={
-                        "date_str": st.column_config.TextColumn(t("input_note")),
-                        "company": st.column_config.TextColumn(t("input_company")),
-                        "title": st.column_config.TextColumn(t("input_title")),
+                        "date_str": st.column_config.TextColumn(t("col_date")),
+                        "company": st.column_config.TextColumn(t("col_company")),
+                        "title": st.column_config.TextColumn(t("col_role")),
                         "description": st.column_config.TextColumn(t("input_note"), width="large"),
-                        "display_status": st.column_config.TextColumn("Status")
+                        "display_status": st.column_config.TextColumn(t("col_status"))
                     },
                     column_order=("date_str", "company", "title", "display_status", "description"),
                     use_container_width=True, hide_index=True
                 )
                 
                 st.markdown("---")
-                # 归档恢复功能
                 st.markdown(f"**{t('manage_title')}**")
                 archive_list = archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
                 sel_archive = st.selectbox("Select to restore", [""] + archive_list, label_visibility="collapsed")
@@ -558,10 +577,7 @@ else:
                     
                     c_res, c_del = st.columns([1, 6])
                     
-                    # 恢复按钮：重置为 applied (或者你可以选择变为 interviewing)
                     if c_res.button(t("btn_restore"), type="primary"):
-                        # 恢复默认为 'applied' 状态，或者你可以保留之前的状态需要更复杂的逻辑
-                        # 这里为了简单，恢复为 'applied' 并提示用户去更新
                         supabase.table("job_applications").update({"status": "applied"}).eq("id", row['id']).execute()
                         st.cache_data.clear()
                         st.success(t("restore_success"))
