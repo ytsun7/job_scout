@@ -9,16 +9,15 @@ import datetime
 # ==========================================
 # 1. 高保真 UI 配置系统 (Morandi Theme)
 # ==========================================
-# 定义莫兰迪色板
 THEME = {
-    "bg_color": "#f7f7f5",           # 暖米灰背景 (Warm Grey)
+    "bg_color": "#f7f7f5",           # 主页面：暖米灰
+    "sidebar_bg": "#f0f0ed",         # 侧边栏：稍深的暖灰
     "card_bg": "#ffffff",            # 纯白卡片
-    "primary": "#7c9082",            # 莫兰迪绿 (Sage Green) - 主按钮/强调
-    "secondary": "#9ca8b8",          # 雾霾蓝 (Dusty Blue) - 次要元素
-    "accent": "#d8c4b6",             # 奶茶色 (Beige) - 装饰
-    "text_main": "#454545",          # 深灰字体 (非纯黑)
+    "primary": "#7c9082",            # 莫兰迪绿 (Sage Green)
+    "secondary": "#9ca8b8",          # 雾霾蓝
+    "text_main": "#454545",          # 深灰字体
     "text_sub": "#8a8a8a",           # 浅灰副标题
-    "table_header": "#f2f4f3"        # 极淡的绿色背景用于表头
+    "table_header": "#f4f6f5"        # 表头背景
 }
 
 st.set_page_config(page_title="Job Tracker Pro", layout="wide", page_icon="💼")
@@ -26,7 +25,6 @@ st.set_page_config(page_title="Job Tracker Pro", layout="wide", page_icon="💼"
 def inject_morandi_css():
     st.markdown(f"""
         <style>
-        /* --- 全局重置与字体 --- */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         
         .stApp {{
@@ -35,43 +33,48 @@ def inject_morandi_css():
             color: {THEME['text_main']};
         }}
 
-        /* --- 关键修复：Header 处理 --- */
-        /* 不要隐藏 header，否则侧边栏按钮会消失。改为背景透明 */
-        header[data-testid="stHeader"] {{
-            background-color: transparent !important;
-        }}
-        /* 仅隐藏顶部的彩虹装饰条 */
-        div[data-testid="stDecoration"] {{
-            visibility: hidden;
-        }}
+        /* --- Header 修复 --- */
+        header[data-testid="stHeader"] {{ background-color: transparent !important; }}
+        div[data-testid="stDecoration"] {{ visibility: hidden; }}
 
-        /* --- 卡片化容器 --- */
-        div[data-testid="stVerticalBlock"] > div[style*="border"] {{
+        /* --- 侧边栏深度美化 --- */
+        section[data-testid="stSidebar"] {{
+            background-color: {THEME['sidebar_bg']};
+            border-right: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+        }}
+        /* 侧边栏内的卡片背景微调 */
+        section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div[style*="border"] {{
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: none !important;
+        }}
+        /* 侧边栏 Expander 样式 */
+        section[data-testid="stSidebar"] .streamlit-expanderHeader {{
+            background-color: transparent;
+            color: {THEME['text_main']};
+            font-size: 0.9rem;
+        }}
+        
+        /* --- 主区域卡片样式 --- */
+        section[data-testid="stMain"] div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg']};
             border: none !important;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* 极柔和阴影 */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             margin-bottom: 16px;
         }}
 
-        /* --- 标题样式 --- */
-        h1, h2, h3 {{
-            color: {THEME['text_main']} !important;
-            font-weight: 600 !important;
-            letter-spacing: -0.5px;
-        }}
-        h1 {{ font-size: 2.2rem !important; }}
-        h3 {{ font-size: 1.3rem !important; margin-top: 0 !important; }}
-
-        /* --- 按钮美化 --- */
+        /* --- 通用字体与按钮 --- */
+        h1, h2, h3 {{ color: {THEME['text_main']} !important; font-weight: 600 !important; }}
+        
         .stButton>button {{
             background-color: {THEME['primary']};
             color: white;
             border: none;
             border-radius: 10px;
             padding: 0.5rem 1rem;
-            font-weight: 500;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(124, 144, 130, 0.2);
         }}
@@ -81,29 +84,27 @@ def inject_morandi_css():
             transform: translateY(-1px);
             color: white !important;
         }}
-        /* 次要按钮 */
-        button[kind="secondary"] {{
+        
+        /* 侧边栏退出按钮特殊样式 (Ghost Style) */
+        section[data-testid="stSidebar"] .stButton>button {{
             background-color: transparent;
-            color: {THEME['text_sub']};
-            border: 1px solid #eee;
+            border: 1px solid {THEME['text_sub']};
+            color: {THEME['text_main']};
+            box-shadow: none;
+        }}
+        section[data-testid="stSidebar"] .stButton>button:hover {{
+            border-color: #e74c3c;
+            color: #e74c3c;
+            background-color: white;
         }}
 
-        /* --- 表格 (DataFrame) 深度美化 --- */
-        div[data-testid="stDataFrame"] {{
-            border: none !important;
-        }}
+        /* --- 表格美化 --- */
+        div[data-testid="stDataFrame"] {{ border: none !important; }}
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
             background-color: {THEME['table_header']} !important;
             border-bottom: 1px solid #eee;
         }}
 
-        /* --- 侧边栏 --- */
-        section[data-testid="stSidebar"] {{
-            background-color: #fdfdfd;
-            border-right: 1px solid rgba(0,0,0,0.02);
-        }}
-
-        /* --- 隐藏页脚和汉堡菜单(可选) --- */
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
         </style>
@@ -112,7 +113,7 @@ def inject_morandi_css():
 inject_morandi_css()
 
 # ==========================================
-# 2. 核心连接逻辑 (保持不变)
+# 2. 核心逻辑 (Supabase & Cookie)
 # ==========================================
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
@@ -124,7 +125,6 @@ def init_connection():
 supabase = init_connection()
 cookie_manager = stx.CookieManager(key="main_auth_manager")
 
-# Cookie 同步 (防闪烁)
 if 'cookie_sync_done' not in st.session_state:
     placeholder = st.empty()
     with placeholder.container():
@@ -171,8 +171,7 @@ def auth_ui():
                     e = st.text_input("邮箱地址")
                     p = st.text_input("密码", type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    submit = st.form_submit_button("登 录")
-                    if submit:
+                    if st.form_submit_button("登 录"):
                         try:
                             res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                             if res.user:
@@ -200,14 +199,60 @@ def auth_ui():
 if not user:
     auth_ui()
 else:
-    # --- 极简侧边栏 ---
+    # --- 💎 侧边栏重构 (高保真版) ---
     with st.sidebar:
-        st.markdown(f"### 👤 个人中心")
-        st.caption(f"{user.email}")
-        st.markdown("---")
-        st.info("💡 提示：保持积极，保持耐心。")
-        st.markdown("<br>"*10, unsafe_allow_html=True)
-        if st.button("退出登录"):
+        st.markdown(f"### ⚙️ 控制台")
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # 模拟个人资料卡片
+        with st.container(border=True):
+            # 获取邮箱首字母用于头像
+            initial = user.email[0].upper() if user.email else "U"
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 0px;">
+                <div style="
+                    width: 42px; height: 42px; 
+                    background-color: {THEME['primary']}; 
+                    color: white; 
+                    border-radius: 50%; 
+                    display: flex; align-items: center; justify-content: center; 
+                    font-weight: 600; font-size: 18px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                ">
+                    {initial}
+                </div>
+                <div style="overflow: hidden;">
+                    <p style="margin: 0; font-size: 14px; font-weight: 600; color: #333;">我的账户</p>
+                    <p style="margin: 0; font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{user.email}">
+                        {user.email}
+                    </p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+            
+            # 折叠的 API Key 区域
+            with st.expander("🔑 查看 API 密钥"):
+                st.caption("在 Chrome 插件中填入此 ID：")
+                st.code(user.id, language=None)
+
+        # 视觉导航占位 (增加 App 感)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.caption("MENU")
+        st.markdown(f"""
+        <div style="padding: 8px 12px; background-color: white; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid {THEME['primary']}; color: {THEME['primary']}; font-weight: 600; font-size: 14px;">
+            📊 进度看板
+        </div>
+        <div style="padding: 8px 12px; color: #888; font-size: 14px;">
+            📁 历史归档 <span style="font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; float: right;">Soon</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<div style='flex-grow: 1; height: 50px;'></div>", unsafe_allow_html=True) # Spacer
+        
+        # 退出按钮
+        if st.button("🚪 退出安全登录"):
             supabase.auth.sign_out()
             st.session_state.user = None
             cookie_manager.delete("sb_access_token", key="del_at_logout")
@@ -215,7 +260,7 @@ else:
             if 'cookie_sync_done' in st.session_state: del st.session_state.cookie_sync_done
             st.rerun()
 
-    # --- 顶部欢迎语 ---
+    # --- 主页面内容 ---
     st.markdown(f"## 早上好，求职者 ✨")
     st.markdown(f"<p style='color:{THEME['text_sub']}; margin-top: -10px; margin-bottom: 30px;'>这里是您的申请进度概览。</p>", unsafe_allow_html=True)
 
@@ -227,7 +272,6 @@ else:
             if not df.empty:
                 df['dt_object'] = pd.to_datetime(df['created_at'])
                 df['formatted_date'] = df['dt_object'].dt.strftime('%Y-%m-%d')
-                # 状态映射
                 status_map = {"applied": "📝 已投递", "interviewing": "🎙️ 面试中", "offer": "🎉 Offer", "rejected": "🍂 已结束", "ghosted": "🔕 无回音"}
                 df['status_display'] = df['status'].map(lambda x: status_map.get(x, x))
                 df = df.reset_index(drop=True)
@@ -239,7 +283,7 @@ else:
     df = load_my_data(user.id)
 
     if not df.empty:
-        # --- 模块 1: 关键指标 (Metrics) ---
+        # 指标卡
         col_m1, col_m2, col_m3, col_m4 = st.columns(4)
         col_m1.metric("总申请", len(df))
         col_m2.metric("面试中", len(df[df['status'] == 'interviewing']))
@@ -250,7 +294,7 @@ else:
         
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # --- 模块 2: 图表与列表 ---
+        # 图表与列表
         c_left, c_right = st.columns([1, 2])
         
         with c_left:
@@ -289,9 +333,8 @@ else:
                     height=300
                 )
 
-        # --- 模块 3: 沉浸式管理面板 ---
+        # 管理面板
         st.markdown("<br>", unsafe_allow_html=True)
-        
         with st.container(border=True):
             st.markdown("### 🛠️ 岗位管理中心")
             st.caption("选择一条记录进行状态更新或编辑详情")
