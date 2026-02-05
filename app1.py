@@ -7,7 +7,7 @@ import time
 import datetime
 
 # ==========================================
-# 0. 国际化与文案配置 (I18n System)
+# 0. 国际化与文案配置 (I18n) - 语气更温暖
 # ==========================================
 if 'language' not in st.session_state:
     st.session_state.language = 'ZH'
@@ -19,222 +19,255 @@ def t(key):
 
 TRANSLATIONS = {
     "ZH": {
-        # 通用
-        "app_name": "Job Tracker",
-        "slogan": "保持节奏，保持平静",
-        "loading": "🌿 正在整理您的空间...",
+        "app_name": "My Career Journal", # 改个更有温度的名字
+        "slogan": "记录每一次尝试，拥抱每一种可能",
+        "loading": "☕ 正在准备您的书桌...",
         
-        # 侧边栏
-        "console": "导航",
-        "my_account": "我的账户",
-        "view_api_key": "查看连接密钥",
-        "nav_dashboard": "📌 进度看板",
-        "nav_archive": "🗂️ 历史归档",
-        "logout": "退出休息",
+        "console": "书签",
+        "my_account": "通行证",
+        "view_api_key": "🔑 连接密钥",
+        "nav_dashboard": "📅 今日看板",
+        "nav_archive": "🗃️ 记忆归档",
+        "logout": "合上日记",
 
-        # 欢迎区
-        "greeting_morning": "早上好，",
-        "greeting_afternoon": "下午好，",
-        "greeting_evening": "晚上好，",
-        "greeting_sub": "今天也是充满可能的一天。保持呼吸，按部就班。",
+        "greeting_morning": "早安,",
+        "greeting_afternoon": "午安,",
+        "greeting_evening": "晚安,",
+        "greeting_sub": "深呼吸。今天也是闪闪发光的一天 ✨",
 
-        # 指标
-        "metric_active": "进行中",
-        "metric_interview": "面试",
-        "metric_offer": "收获",
-        "metric_rate": "回应率",
+        "metric_active": "正在进行",
+        "metric_interview": "约见",
+        "metric_offer": "好消息",
+        "metric_rate": "回音",
 
-        # 归档页
-        "archive_title": "📜 归档室",
-        "archive_sub": "这里存放已封存的记录。它们是你经历的一部分。",
-        "archive_empty": "归档室是空的。",
-        "btn_restore": "♻️ 恢复到看板",
-        "restore_success": "记录已恢复到活跃看板",
+        "archive_title": "🗃️ 记忆归档室",
+        "archive_sub": "这里存放着过去的足迹。每一段经历都算数。",
+        "archive_empty": "📭 归档室里空空如也，去写下新故事吧。",
+        "btn_restore": "♻️ 放回桌面",
+        "restore_success": "已把这条记录放回桌面",
 
-        # 看板与管理
-        "chart_title": "活跃状态分布",
-        "list_title": "最近动态 (活跃)",
-        "manage_title": "🌱 岗位管理",
-        "manage_hint": "更新进度，或将其归档以保持专注...",
-        "input_title": "岗位",
+        "chart_title": "我的状态分布",
+        "list_title": "最近的足迹",
+        "manage_title": "✍️ 记录与整理",
+        "manage_hint": "修改进度，或者写下当时的心情...",
+        "input_title": "想去的岗位",
         "input_company": "公司",
-        "input_status": "当前阶段",
-        "input_loc": "地点",
-        "input_note": "备忘录",
+        "input_status": "到了哪一步",
+        "input_loc": "城市",
+        "input_note": "随笔 / 备忘",
         
-        # --- 修改点：列名更新 ---
         "col_date": "添加日期",
         "col_company": "公司名称",
         "col_role": "岗位",
         "col_status": "当前状态",
         
-        "btn_save": "保存更新",
-        "btn_archive": "📂 移入归档",
-        "btn_del": "彻底删除",
+        "btn_save": "💾 保存笔记",
+        "btn_archive": "📂 封存入库",
+        "btn_del": "🗑️ 擦除记录",
         
-        "msg_archived": "已移入归档室",
-        "msg_updated": "已更新",
-        "msg_deleted": "已删除",
-        "empty_desc": "暂无活跃申请，请去抓取一些新机会吧。",
+        "msg_archived": "已封存，休息一下吧",
+        "msg_updated": "笔记已更新",
+        "msg_deleted": "痕迹已擦除",
+        "empty_desc": "📝 还没有活跃的记录。去寻找心动的机会吧！",
 
-        # 状态
-        "s_applied": "📝 已投递",
-        "s_interviewing": "🎙️ 面试中",
-        "s_offer": "✨ 收获 Offer",
-        "s_rejected": "🍂 已结束",
+        "s_applied": "🌱 已投递",
+        "s_interviewing": "🎙️ 交流中",
+        "s_offer": "🎉 收获 Offer",
+        "s_rejected": "🍂 已翻篇",
         "s_ghosted": "🔕 暂无回音",
-        "s_archived": "🗂️ 已归档"
+        "s_archived": "🔒 已封存"
     },
     "EN": {
-        "app_name": "Job Tracker",
-        "slogan": "Stay paced, stay calm.",
-        "loading": "🌿 Preparing your space...",
+        "app_name": "My Career Journal",
+        "slogan": "Record every step, embrace every possibility.",
+        "loading": "☕ Preparing your desk...",
         
-        "console": "Navigation",
-        "my_account": "My Account",
-        "view_api_key": "Connection Key",
-        "nav_dashboard": "📌 Dashboard",
-        "nav_archive": "🗂️ Archive",
-        "logout": "Sign Out",
+        "console": "Bookmarks",
+        "my_account": "Passport",
+        "view_api_key": "🔑 Key",
+        "nav_dashboard": "📅 Today's View",
+        "nav_archive": "🗃️ The Vault",
+        "logout": "Close Journal",
 
-        "greeting_morning": "Good morning, ",
-        "greeting_afternoon": "Good afternoon, ",
-        "greeting_evening": "Good evening, ",
-        "greeting_sub": "Take a deep breath. Focus on what you can control.",
+        "greeting_morning": "Good morning,",
+        "greeting_afternoon": "Good afternoon,",
+        "greeting_evening": "Good evening,",
+        "greeting_sub": "Breathe in. You are doing great today ✨",
 
         "metric_active": "Active",
-        "metric_interview": "Interviews",
-        "metric_offer": "Offers",
-        "metric_rate": "Response Rate",
+        "metric_interview": "Meeting",
+        "metric_offer": "Good News",
+        "metric_rate": "Replies",
 
-        "archive_title": "📜 The Archive",
-        "archive_sub": "Stored records of your past journey.",
-        "archive_empty": "The archive is empty.",
+        "archive_title": "🗃️ The Archive",
+        "archive_sub": "Stored memories. Every experience counts.",
+        "archive_empty": "📭 The vault is empty. Go write new stories.",
         "btn_restore": "♻️ Restore",
-        "restore_success": "Restored to dashboard",
+        "restore_success": "Restored to desk",
 
-        "chart_title": "Active Distribution",
-        "list_title": "Recent Activity (Active)",
-        "manage_title": "🌱 Management",
-        "manage_hint": "Update progress, or archive to stay focused...",
+        "chart_title": "My Journey Stats",
+        "list_title": "Recent Footprints",
+        "manage_title": "✍️ Edit & Reflect",
+        "manage_hint": "Update progress or jot down your thoughts...",
         "input_title": "Role",
         "input_company": "Company",
         "input_status": "Stage",
-        "input_loc": "Location",
-        "input_note": "Notes",
+        "input_loc": "City",
+        "input_note": "Diary / Notes",
         
-        # --- Modification: Column Names Updated ---
         "col_date": "Date Added",
         "col_company": "Company Name",
         "col_role": "Role",
         "col_status": "Status",
         
-        "btn_save": "Save Changes",
+        "btn_save": "💾 Save Note",
         "btn_archive": "📂 Archive",
-        "btn_del": "Delete Permanently",
+        "btn_del": "🗑️ Erase",
         
-        "msg_archived": "Moved to Archive",
-        "msg_updated": "Updated",
-        "msg_deleted": "Deleted",
-        "empty_desc": "No active applications.",
+        "msg_archived": "Archived. Take a rest.",
+        "msg_updated": "Note updated",
+        "msg_deleted": "Erased",
+        "empty_desc": "📝 No active records yet. Go find some sparks!",
 
-        "s_applied": "📝 Applied",
-        "s_interviewing": "🎙️ Interview",
-        "s_offer": "✨ Offer",
-        "s_rejected": "🍂 Ended",
-        "s_ghosted": "🔕 Ghosted",
-        "s_archived": "🗂️ Archived"
+        "s_applied": "🌱 Applied",
+        "s_interviewing": "🎙️ Talking",
+        "s_offer": "🎉 Offer",
+        "s_rejected": "🍂 Past",
+        "s_ghosted": "🔕 Silent",
+        "s_archived": "🔒 Archived"
     }
 }
 
 # ==========================================
-# 1. 禅意 UI 主题配置
+# 1. "Cozy Journal" UI 主题配置
 # ==========================================
 THEME = {
-    "bg_color": "#F9F9F6",           # 羊皮纸色
-    "sidebar_bg": "#F2F2F0",         # 极淡灰
-    "card_bg": "#FFFFFF",            # 纯白
-    "primary": "#7A9E9F",            # 尤加利青
-    "primary_light": "#E8F1F2",      
-    "text_main": "#4A5568",          
-    "text_light": "#A0AEC0",
-    "archived_tag": "#E2E8F0"
+    "bg_color": "#FFFBF0",           # 暖蛋壳色/米黄 (Warm Eggshell)
+    "sidebar_bg": "#F7F3E8",         # 稍深一点的米色
+    "card_bg": "#FFFFFF",            # 纯白卡片
+    "primary": "#88B04B",            # 草木绿 (Greenery) - 治愈
+    "primary_dark": "#607d34",
+    "accent_blue": "#8CACD3",        # 雾霾蓝
+    "accent_pink": "#EFAAC4",        # 柔粉
+    "accent_orange": "#F4A261",      # 暖橙
+    "text_main": "#595959",          # 暖深灰 (不刺眼)
+    "text_light": "#9D9D9D",
+    "border_color": "#EFE6D5"        # 纸张边框色
 }
 
-st.set_page_config(page_title="Job Tracker", layout="wide", page_icon="🌿")
+st.set_page_config(page_title="Career Journal", layout="wide", page_icon="📔")
 
-def inject_zen_css():
+def inject_cozy_css():
     st.markdown(f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        /* 引入圆体字 Quicksand */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
         
         .stApp {{
             background-color: {THEME['bg_color']};
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-image: radial-gradient({THEME['border_color']} 1px, transparent 1px);
+            background-size: 20px 20px; /* 点阵纸纹理 */
+            font-family: 'Quicksand', 'Noto Sans SC', sans-serif;
             color: {THEME['text_main']};
         }}
 
+        /* 隐藏原生头部 */
         header[data-testid="stHeader"] {{ background-color: transparent !important; }}
         div[data-testid="stDecoration"] {{ visibility: hidden; }}
         #MainMenu, footer {{ visibility: hidden; }}
 
+        /* --- 卡片 (Card) --- */
         div[data-testid="stVerticalBlock"] > div[style*="border"] {{
             background-color: {THEME['card_bg']};
-            border: 1px solid rgba(0,0,0,0.02) !important;
-            border-radius: 20px;
+            border: 2px solid {THEME['border_color']} !important;
+            border-radius: 24px; /* 更大的圆角 */
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            box-shadow: 4px 4px 0px rgba(239, 230, 213, 0.8); /* 卡通风格的硬阴影 */
             margin-bottom: 24px;
         }}
 
+        /* --- 侧边栏 (Sidebar) --- */
         section[data-testid="stSidebar"] {{
             background-color: {THEME['sidebar_bg']};
-            border-right: none;
+            border-right: 2px solid {THEME['border_color']};
         }}
         
+        /* --- 按钮 (Buttons) - 像糖果/药丸 --- */
         .stButton>button {{
             background-color: {THEME['primary']};
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 10px rgba(122, 158, 159, 0.2);
+            border-radius: 50px; /* 胶囊形状 */
+            padding: 0.6rem 1.5rem;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Q弹效果 */
+            box-shadow: 0 4px 6px rgba(136, 176, 75, 0.3);
         }}
         .stButton>button:hover {{
-            background-color: #638586;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(122, 158, 159, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(136, 176, 75, 0.4);
+            background-color: {THEME['primary_dark']};
         }}
         
-        /* 次要按钮 (如归档/删除) */
+        /* 次要按钮 */
         button[kind="secondary"] {{
             background-color: transparent !important;
-            border: 1px solid #CBD5E0 !important;
-            color: {THEME['text_main']} !important;
+            border: 2px dashed {THEME['text_light']} !important;
+            color: {THEME['text_light']} !important;
             box-shadow: none !important;
         }}
         button[kind="secondary"]:hover {{
-            border-color: {THEME['primary']} !important;
-            color: {THEME['primary']} !important;
-            background-color: white !important;
+            border-color: {THEME['accent_orange']} !important;
+            color: {THEME['accent_orange']} !important;
+            background-color: #FFF !important;
         }}
 
-        /* 表格去边框 */
+        /* --- 语言切换按钮 (Flags) --- */
+        /* 让它们看起来像贴纸 */
+        div[data-testid="stHorizontalBlock"] button {{
+            border-radius: 16px;
+            font-size: 1.1rem;
+        }}
+
+        /* --- 表单输入框 (Inputs) --- */
+        input[type="text"], input[type="password"], textarea, div[data-baseweb="select"] > div {{
+            background-color: #FDFDFD;
+            border: 2px solid {THEME['border_color']} !important;
+            border-radius: 16px !important;
+            color: {THEME['text_main']};
+            transition: all 0.2s;
+        }}
+        input:focus, textarea:focus {{
+            border-color: {THEME['primary']} !important;
+            background-color: #FFF;
+        }}
+
+        /* --- 表格 (Notebook Style) --- */
         div[data-testid="stDataFrame"] {{ border: none !important; }}
         div[class*="stDataFrame"] div[class*="ColumnHeaders"] {{
             background-color: transparent !important;
-            border-bottom: 2px solid {THEME['primary_light']};
-            font-weight: 600;
-            color: {THEME['text_light']};
+            border-bottom: 2px dashed {THEME['primary']}; /* 虚线表头 */
+            font-weight: 700;
+            color: {THEME['primary']};
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }}
+        div[class*="stDataFrame"] div[class*="DataCell"] {{
+             border-bottom: 1px solid #F0F0F0; /* 横线本子效果 */
+        }}
+        
+        /* 标题字体 */
+        h1, h2, h3 {{ 
+            color: {THEME['text_main']} !important; 
+            font-weight: 700 !important; 
         }}
         </style>
     """, unsafe_allow_html=True)
 
-inject_zen_css()
+inject_cozy_css()
 
 # ==========================================
-# 2. 核心逻辑
+# 2. 核心逻辑 (Supabase & Cookie)
 # ==========================================
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
@@ -274,39 +307,41 @@ def get_current_user():
 user = get_current_user()
 
 # ==========================================
-# 3. 登录 UI
+# 3. 登录页 UI (Warm & Inviting)
 # ==========================================
 def auth_ui():
     st.markdown("<br><br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
         with st.container(border=True):
-            st.markdown(f"<h2 style='text-align: center; color: {THEME['primary']}; margin-bottom: 5px;'>{t('app_name')}</h2>", unsafe_allow_html=True)
-            st.markdown(f"<p style='text-align: center; color: #999; font-size: 0.9rem; margin-bottom: 30px;'>{t('slogan')}</p>", unsafe_allow_html=True)
+            # 卡通风格标题
+            st.markdown(f"""
+            <div style="text-align: center;">
+                <h1 style="color: {THEME['primary']}; font-size: 2.5rem; margin-bottom: 0;">📔</h1>
+                <h2 style="color: {THEME['text_main']}; margin-top: 0;">{t('app_name')}</h2>
+                <p style="color: {THEME['text_light']}; font-style: italic;">{t('slogan')}</p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # --- 修改点 (1)：登录页面的国旗切换 ---
-            # 使用两列按钮，选中的语言用 primary 样式，未选中的用 secondary
-            lang_col1, lang_col2 = st.columns(2)
-            with lang_col1:
-                # 只有当当前语言是ZH时，样式为primary，否则为secondary
-                zh_type = "primary" if st.session_state.language == "ZH" else "secondary"
-                if st.button("🇨🇳 中文", key="auth_lang_zh", use_container_width=True, type=zh_type):
-                    st.session_state.language = "ZH"
-                    st.rerun()
-            with lang_col2:
-                en_type = "primary" if st.session_state.language == "EN" else "secondary"
-                if st.button("🇺🇸 English", key="auth_lang_en", use_container_width=True, type=en_type):
-                    st.session_state.language = "EN"
-                    st.rerun()
-            st.markdown("<br>", unsafe_allow_html=True)
+            # 语言切换 (国旗贴纸)
+            c1, c2 = st.columns(2)
+            with c1:
+                t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
+                if st.button("🇨🇳 中文", key="auth_zh", use_container_width=True, type=t_zh):
+                    st.session_state.language = "ZH"; st.rerun()
+            with c2:
+                t_en = "primary" if st.session_state.language == "EN" else "secondary"
+                if st.button("🇺🇸 English", key="auth_en", use_container_width=True, type=t_en):
+                    st.session_state.language = "EN"; st.rerun()
 
-            tab1, tab2 = st.tabs(["登录", "注册"])
+            st.markdown("<br>", unsafe_allow_html=True)
+            tab1, tab2 = st.tabs(["🔑 登录", "✨ 注册"])
             with tab1:
                 with st.form("login_form"):
-                    e = st.text_input("邮箱")
-                    p = st.text_input("密码", type="password")
+                    e = st.text_input("Email")
+                    p = st.text_input("Password", type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    if st.form_submit_button("进入空间"):
+                    if st.form_submit_button("📖 打开日记"):
                         try:
                             res = supabase.auth.sign_in_with_password({"email": e, "password": p})
                             if res.user:
@@ -314,67 +349,67 @@ def auth_ui():
                                 exp = datetime.datetime.now() + datetime.timedelta(hours=3)
                                 cookie_manager.set("sb_access_token", res.session.access_token, expires_at=exp, key="set_at")
                                 cookie_manager.set("sb_refresh_token", res.session.refresh_token, expires_at=exp, key="set_rt")
-                                st.success("Welcome.")
+                                st.success("Welcome back.")
                                 time.sleep(1); st.rerun()
                         except Exception as ex: st.error(str(ex))
             with tab2:
                 with st.form("signup_form"):
-                    ne = st.text_input("新邮箱")
-                    np = st.text_input("设置密码", type="password")
+                    ne = st.text_input("New Email")
+                    np = st.text_input("New Password", type="password")
                     st.markdown("<br>", unsafe_allow_html=True)
-                    if st.form_submit_button("创建账户"):
+                    if st.form_submit_button("✨ 开始记录"):
                         try:
                             supabase.auth.sign_up({"email": ne, "password": np})
-                            st.success("请查看邮箱验证")
+                            st.success("Please check your email.")
                         except Exception as ex: st.error(str(ex))
 
 # ==========================================
-# 4. 主程序
+# 4. 主程序 - 舒适手帐风
 # ==========================================
 if not user:
     auth_ui()
 else:
-    # --- 侧边栏 ---
+    # --- 侧边栏 (Bookmark Style) ---
     with st.sidebar:
-        # --- 修改点 (1)：侧边栏的国旗切换 ---
-        c1, c2 = st.columns([1, 1])
+        # 国旗切换
+        c1, c2 = st.columns(2)
         with c1:
-            zh_type = "primary" if st.session_state.language == "ZH" else "secondary"
-            if st.button("🇨🇳 中文", key="side_lang_zh", use_container_width=True, type=zh_type):
-                st.session_state.language = "ZH"
-                st.rerun()
+            t_zh = "primary" if st.session_state.language == "ZH" else "secondary"
+            if st.button("🇨🇳", key="side_zh", use_container_width=True, type=t_zh):
+                st.session_state.language = "ZH"; st.rerun()
         with c2:
-            en_type = "primary" if st.session_state.language == "EN" else "secondary"
-            if st.button("🇺🇸 EN", key="side_lang_en", use_container_width=True, type=en_type):
-                st.session_state.language = "EN"
-                st.rerun()
+            t_en = "primary" if st.session_state.language == "EN" else "secondary"
+            if st.button("🇺🇸", key="side_en", use_container_width=True, type=t_en):
+                st.session_state.language = "EN"; st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
+        # 用户卡片 (ID Card)
         with st.container(border=True):
             initial = user.email[0].upper()
             st.markdown(f"""
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 40px; height: 40px; background: {THEME['primary']}; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">{initial}</div>
-                <div style="overflow: hidden;">
-                    <div style="font-weight: 600; color: {THEME['text_main']}">{t('my_account')}</div>
-                    <div style="font-size: 0.8rem; color: {THEME['text_light']}; overflow: hidden; text-overflow: ellipsis;">{user.email}</div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div style="width: 60px; height: 60px; background: {THEME['primary']}; border-radius: 50%; border: 4px solid #FFF; box-shadow: 0 4px 8px rgba(0,0,0,0.1); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+                    {initial}
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-weight: 700; color: {THEME['text_main']}; font-size: 0.9rem;">{user.email.split('@')[0]}</div>
+                    <div style="font-size: 0.75rem; color: {THEME['text_light']}; font-family: monospace;">ID: {user.id[:8]}...</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             with st.expander(t("view_api_key")):
                 st.code(user.id, language=None)
 
-        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.8rem; margin: 20px 0 10px 5px; font-weight: 600;'>{t('console').upper()}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='color:{THEME['text_light']}; font-size: 0.8rem; margin: 30px 0 10px 10px; font-weight: 700; letter-spacing: 1px;'>{t('console').upper()}</div>", unsafe_allow_html=True)
         
-        if st.button(t("nav_dashboard"), key="nav_dash", use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
-            st.session_state.page = 'dashboard'
-            st.rerun()
+        # 导航按钮
+        if st.button(t("nav_dashboard"), key="nav_d", use_container_width=True, type="primary" if st.session_state.page == 'dashboard' else "secondary"):
+            st.session_state.page = 'dashboard'; st.rerun()
             
-        if st.button(t("nav_archive"), key="nav_arch", use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
-            st.session_state.page = 'archive'
-            st.rerun()
+        if st.button(t("nav_archive"), key="nav_a", use_container_width=True, type="primary" if st.session_state.page == 'archive' else "secondary"):
+            st.session_state.page = 'archive'; st.rerun()
 
-        st.markdown("<div style='flex-grow: 1; height: 100px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='flex-grow: 1; height: 80px;'></div>", unsafe_allow_html=True)
         if st.button(t("logout"), type="secondary", use_container_width=True):
             supabase.auth.sign_out()
             st.session_state.user = None
@@ -383,7 +418,7 @@ else:
             if 'cookie_sync_done' in st.session_state: del st.session_state.cookie_sync_done
             st.rerun()
 
-    # --- 数据加载与分流 ---
+    # --- 数据加载 ---
     @st.cache_data(ttl=5)
     def load_my_data(uid):
         try:
@@ -399,10 +434,8 @@ else:
 
     df = load_my_data(user.id)
     
-    # 拆分活跃数据和归档数据
     active_df = pd.DataFrame()
     archived_df = pd.DataFrame()
-    
     if not df.empty:
         active_df = df[df['status'] != 'archived']
         archived_df = df[df['status'] == 'archived']
@@ -414,7 +447,7 @@ else:
     }
 
     # ==========================================
-    # 5. 页面路由逻辑
+    # 5. 页面路由
     # ==========================================
     hour = datetime.datetime.now().hour
     if hour < 12: greet = t("greeting_morning")
@@ -422,83 +455,97 @@ else:
     else: greet = t("greeting_evening")
 
     if st.session_state.page == 'dashboard':
-        # --- 📌 仪表盘 ---
-        st.markdown(f"## {greet} ✨")
-        st.markdown(f"<div style='color:{THEME['text_light']}; margin-top: -15px; margin-bottom: 30px;'>{t('greeting_sub')}</div>", unsafe_allow_html=True)
-
+        # --- 📅 看板 (My Day) ---
+        
+        # 头部欢迎
+        c_head1, c_head2 = st.columns([2, 1])
+        with c_head1:
+            st.markdown(f"<h1 style='font-size: 2.2rem;'>{greet} <span style='color:{THEME['primary']}'>{user.email.split('@')[0]}</span> 🌿</h1>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:{THEME['text_light']}; font-size: 1.1rem;'>{t('greeting_sub')}</p>", unsafe_allow_html=True)
+        
         if active_df.empty:
-             st.info(t("empty_desc"))
+             st.markdown(f"""
+             <div style='text-align: center; padding: 40px; color: {THEME['text_light']};'>
+                <div style='font-size: 4rem;'>🪁</div>
+                <p>{t('empty_desc')}</p>
+             </div>
+             """, unsafe_allow_html=True)
         else:
-            # 活跃指标
+            # 贴纸风格的指标卡 (Stickers)
             m1, m2, m3, m4 = st.columns(4)
-            active_cnt = len(active_df[active_df['status'].isin(['applied', 'interviewing'])])
-            interview_cnt = len(active_df[active_df['status'] == 'interviewing'])
-            offer_cnt = len(active_df[active_df['status'] == 'offer'])
-            resp_rate = len(active_df[active_df['status'] != 'applied']) / len(active_df) * 100
             
-            def zen_metric(label, value, icon):
+            # 计算
+            cnt_active = len(active_df[active_df['status'].isin(['applied', 'interviewing'])])
+            cnt_int = len(active_df[active_df['status'] == 'interviewing'])
+            cnt_off = len(active_df[active_df['status'] == 'offer'])
+            rate = len(active_df[active_df['status'] != 'applied']) / len(active_df) * 100
+            
+            # 渲染贴纸函数
+            def sticker(label, value, emoji, bg_color, text_color):
                 st.markdown(f"""
-                <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #f0f0f0;">
-                    <div style="color: #A0AEC0; font-size: 0.85rem; margin-bottom: 5px;">{label}</div>
-                    <div style="font-size: 1.8rem; font-weight: 600; color: {THEME['text_main']};">
-                        {value} <span style="font-size: 1.2rem;">{icon}</span>
-                    </div>
+                <div style="background-color: {bg_color}; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.05); transition: transform 0.2s;">
+                    <div style="font-size: 2rem; margin-bottom: 5px;">{emoji}</div>
+                    <div style="font-weight: 700; font-size: 1.5rem; color: {text_color};">{value}</div>
+                    <div style="font-size: 0.8rem; color: {text_color}; opacity: 0.8;">{label}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
-            with m1: zen_metric(t("metric_active"), active_cnt, "🌱")
-            with m2: zen_metric(t("metric_interview"), interview_cnt, "🎙️")
-            with m3: zen_metric(t("metric_offer"), offer_cnt, "✨")
-            with m4: zen_metric(t("metric_rate"), f"{resp_rate:.0f}%", "📈")
+            with m1: sticker(t("metric_active"), cnt_active, "🌱", "#E8F5E9", "#2E7D32") # 浅绿
+            with m2: sticker(t("metric_interview"), cnt_int, "🎙️", "#FFF3E0", "#EF6C00") # 浅橙
+            with m3: sticker(t("metric_offer"), cnt_off, "✨", "#F3E5F5", "#7B1FA2") # 浅紫
+            with m4: sticker(t("metric_rate"), f"{rate:.0f}%", "💌", "#E3F2FD", "#1565C0") # 浅蓝
 
             st.markdown("<br>", unsafe_allow_html=True)
 
-            c1, c2 = st.columns([1.2, 2])
+            # 笔记本风格布局
+            c_main, c_side = st.columns([2, 1.2])
             
-            with c1:
-                with st.container(border=True):
-                    st.markdown(f"### {t('chart_title')}")
-                    chart_df = active_df.copy()
-                    chart_df['status_label'] = chart_df['status'].map(lambda x: status_map.get(x, x))
-                    counts = chart_df['status_label'].value_counts().reset_index()
-                    counts.columns = ['label', 'count']
-                    morandi = ['#7c9082', '#9ca8b8', '#d8c4b6', '#e0cdcf', '#aab5a9']
-
-                    fig = px.pie(counts, values='count', names='label', hole=0.75, color_discrete_sequence=morandi)
-                    fig.update_layout(
-                        margin=dict(t=10, b=10, l=10, r=10), height=250, showlegend=False,
-                        annotations=[dict(text=str(len(active_df)), x=0.5, y=0.5, font_size=24, showarrow=False, font_color=THEME['text_main'])]
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-
-            with c2:
+            with c_main:
                 with st.container(border=True):
                     st.markdown(f"### {t('list_title')}")
-                    # 列表
                     show_df = active_df.head(5).copy()
-                    show_df['status_display'] = show_df['status'].map(lambda x: status_map.get(x, x))
+                    show_df['s_disp'] = show_df['status'].map(lambda x: status_map.get(x, x))
                     
-                    # --- 修改点 (2)：表格列名使用更新后的翻译键值 ---
                     st.dataframe(
                         show_df,
                         column_config={
                             "date_str": st.column_config.TextColumn(t("col_date"), width="small"),
-                            "status_display": st.column_config.TextColumn(t("col_status"), width="medium"),
-                            "company": st.column_config.TextColumn(t("col_company"), width="medium"),
-                            "title": st.column_config.TextColumn(t("col_role"), width="large"),
+                            "s_disp": st.column_config.TextColumn(t("col_status"), width="small"),
+                            "company": st.column_config.TextColumn(t("col_company")),
+                            "title": st.column_config.TextColumn(t("col_role"), width="medium"),
                         },
-                        column_order=("date_str", "company", "title", "status_display"),
+                        column_order=("date_str", "company", "title", "s_disp"),
                         use_container_width=True, hide_index=True, height=250
                     )
 
-            # --- 岗位管理区 ---
+            with c_side:
+                with st.container(border=True):
+                    st.markdown(f"### {t('chart_title')}")
+                    # 手绘风配色
+                    chart_df = active_df.copy()
+                    chart_df['s_label'] = chart_df['status'].map(lambda x: status_map.get(x, x))
+                    counts = chart_df['s_label'].value_counts().reset_index()
+                    counts.columns = ['label', 'count']
+                    
+                    # 舒适粉笔配色
+                    cozy_palette = ['#88B04B', '#FF6F61', '#6B5B95', '#F7CAC9', '#92A8D1']
+                    
+                    fig = px.pie(counts, values='count', names='label', hole=0.6, color_discrete_sequence=cozy_palette)
+                    fig.update_layout(
+                        margin=dict(t=10, b=10, l=10, r=10), height=250, showlegend=False,
+                        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                        annotations=[dict(text=f"{len(active_df)}\nTotal", x=0.5, y=0.5, font_size=16, showarrow=False, font_color=THEME['text_light'])]
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+            # 管理卡片 (Sticky Note Style)
             st.markdown("<br>", unsafe_allow_html=True)
             with st.container(border=True):
                 st.markdown(f"### {t('manage_title')}")
-                st.markdown(f"<div style='color:#999; margin-bottom: 20px;'>{t('manage_hint')}</div>", unsafe_allow_html=True)
+                st.caption(t("manage_hint"))
                 
                 job_list = active_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
-                selected_job_str = st.selectbox("Search", [""] + job_list, label_visibility="collapsed", placeholder="Search active jobs...")
+                selected_job_str = st.selectbox("Search", [""] + job_list, label_visibility="collapsed", placeholder="Select a job note...")
                 
                 if selected_job_str:
                     st.markdown("---")
@@ -516,42 +563,42 @@ else:
                             new_c = st.text_input(t("input_company"), value=row['company'])
                             new_l = st.text_input(t("input_loc"), value=row['location'])
                         
-                        new_d = st.text_area(t("input_note"), value=row['description'])
+                        new_d = st.text_area(t("input_note"), value=row['description'], height=100)
                         
                         b1, b2, b3 = st.columns([1.5, 1.5, 4])
-                        
                         if b1.form_submit_button(t("btn_save")):
                             supabase.table("job_applications").update({
                                 "title": new_t, "company": new_c, "status": new_s, "location": new_l, "description": new_d
                             }).eq("id", row['id']).execute()
                             st.cache_data.clear()
-                            st.success(t("msg_updated"))
-                            time.sleep(0.5); st.rerun()
+                            st.success(t("msg_updated")); time.sleep(0.5); st.rerun()
                         
                         if b2.form_submit_button(t("btn_archive"), type="secondary"):
                             supabase.table("job_applications").update({"status": "archived"}).eq("id", row['id']).execute()
                             st.cache_data.clear()
-                            st.success(t("msg_archived"))
-                            time.sleep(0.5); st.rerun()
+                            st.success(t("msg_archived")); time.sleep(0.5); st.rerun()
 
-                    if st.button(t("btn_del"), type="secondary", key="del_dash"):
+                    if st.button(t("btn_del"), type="secondary", key="del_d"):
                         supabase.table("job_applications").delete().eq("id", row['id']).execute()
                         st.cache_data.clear()
-                        st.warning(t("msg_deleted"))
-                        time.sleep(0.5); st.rerun()
+                        st.warning(t("msg_deleted")); time.sleep(0.5); st.rerun()
 
     elif st.session_state.page == 'archive':
-        # --- 🗂️ 归档页面 ---
+        # --- 🗃️ 归档页 (The Vault) ---
         st.markdown(f"## {t('archive_title')}")
-        st.markdown(f"<div style='color:{THEME['text_light']}; margin-top: -15px; margin-bottom: 30px;'>{t('archive_sub')}</div>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{THEME['text_light']}'>{t('archive_sub')}</p>", unsafe_allow_html=True)
         
         if archived_df.empty:
-            st.info(t("archive_empty"))
+            st.markdown(f"""
+             <div style='text-align: center; padding: 60px; color: {THEME['text_light']}; border: 2px dashed {THEME['border_color']}; border-radius: 20px;'>
+                <div style='font-size: 3rem; opacity: 0.5;'>📦</div>
+                <p>{t('archive_empty')}</p>
+             </div>
+             """, unsafe_allow_html=True)
         else:
             with st.container(border=True):
                 archived_df['display_status'] = t("s_archived")
                 
-                # --- 修改点 (2)：归档表格也应用新的列名 ---
                 st.dataframe(
                     archived_df,
                     column_config={
@@ -566,25 +613,21 @@ else:
                 )
                 
                 st.markdown("---")
-                st.markdown(f"**{t('manage_title')}**")
                 archive_list = archived_df.apply(lambda x: f"{x['company']} - {x['title']}", axis=1).tolist()
-                sel_archive = st.selectbox("Select to restore", [""] + archive_list, label_visibility="collapsed")
+                sel_archive = st.selectbox("Restore Record", [""] + archive_list, label_visibility="collapsed", placeholder="Select to restore...")
                 
                 if sel_archive:
                     row_idx = archive_list.index(sel_archive)
                     row = archived_df.iloc[row_idx]
-                    st.caption(f"Selected: {row['title']} @ {row['company']}")
+                    st.info(f"Selected: {row['title']} @ {row['company']}")
                     
                     c_res, c_del = st.columns([1, 6])
-                    
                     if c_res.button(t("btn_restore"), type="primary"):
                         supabase.table("job_applications").update({"status": "applied"}).eq("id", row['id']).execute()
                         st.cache_data.clear()
-                        st.success(t("restore_success"))
-                        time.sleep(0.5); st.rerun()
+                        st.success(t("restore_success")); time.sleep(0.5); st.rerun()
                     
-                    if c_del.button(t("btn_del"), key="del_arch", type="secondary"):
+                    if c_del.button(t("btn_del"), key="del_a", type="secondary"):
                         supabase.table("job_applications").delete().eq("id", row['id']).execute()
                         st.cache_data.clear()
-                        st.warning(t("msg_deleted"))
-                        time.sleep(0.5); st.rerun()
+                        st.warning(t("msg_deleted")); time.sleep(0.5); st.rerun()
