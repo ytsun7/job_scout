@@ -1,1 +1,1 @@
-# job_scout
+# job_scout beta
