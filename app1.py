@@ -19,7 +19,7 @@ def t(key):
 
 TRANSLATIONS = {
     "ZH": {
-        "app_name": "NORDIC FLOW",
+        "app_name": "JOB SCOUT",
         "slogan": "理性的数据，感知的温度",
         "loading": "系统初始化中...",
         "tab_login": "登 录", "tab_register": "注 册",
